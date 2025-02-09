@@ -1,0 +1,8 @@
+#root {
+  width: 100vw; /* vw is a rel unit representing a percentage of the width of the viewport or the visible area of the web browser */
+  height: 100vh;
+}
+
+body {
+  margin: 0;
+}
