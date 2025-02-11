@@ -5,7 +5,7 @@ Command: npx gltfjsx@6.5.3 public/models/67a7f88926adc938cec34756.glb -o src/com
 
 import React, { useEffect, useRef, useState } from "react";
 import { useGraph } from "@react-three/fiber";
-import { useGLTF, useFBX, useAnimations } from "@react-three/drei";
+import { useGLTF, useFBX, useAnimations, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
@@ -26,14 +26,42 @@ export function Avatar(props) {
     group
   );
 
-  const [animation, setAnimation] = useState("Walking"); // Default Idle state
+  const [animation, setAnimation] = useState("Idle"); // Default Idle state
   // Play animation based on state
   useEffect(() => {
     actions[animation].reset().fadeIn(0.6).play();
     return () => actions[animation].fadeOut(0.6);
   }, [animation]);
 
-  //
+  const scrollData = useScroll();
+  // Store previous scroll to get distance between different scrolls (& use ref instead of state to avoid re-renders each time we update lastScroll value)
+  const lastScroll = useRef(0);
+
+  // Logic to decide when avatar should be walking (on scroll) and when it should be idle
+  useFrame(() => {
+    // Get scroll delta btwn current scroll pos and last scroll pos
+    const scrollDelta = scrollData.offset - lastScroll.current;
+    let walkingDir = 0;
+    // If we have scrolled fwd or backward, set animation state to walking
+    if (Math.abs(scrollDelta) > 0.00001) {
+      setAnimation("Walking");
+      if (scrollDelta > 0) {
+        // Moving forward
+      } else {
+        // Moving backward
+        walkingDir = Math.PI;
+      }
+    } else {
+      setAnimation("Idle");
+    }
+    // Set rotation of group about y (vertical) axis to the direction defined using a Lerp to transition gradually
+    group.current.rotation.y = THREE.MathUtils.lerp(
+      group.current.rotation.y,
+      walkingDir,
+      0.1
+    );
+    lastScroll.current = scrollData.offset; // Update last scroll value
+  });
 
   return (
     <group {...props} dispose={null} ref={group}>

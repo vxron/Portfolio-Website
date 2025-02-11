@@ -1,11 +1,13 @@
 /* eslint-disable react/no-unknown-property */
-import { OrbitControls, useHelper } from "@react-three/drei";
+import { OrbitControls, useHelper, ScrollControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
 import { useRef } from "react";
 import * as THREE from "three";
-import { useControls } from "leva";
+import { button, useControls } from "leva";
+import { config } from "./config";
 
+/*
 const Lights = () => {
   const ref = useRef();
   const helper = useHelper(ref, THREE.PointLightHelper, 0.5, "red");
@@ -26,18 +28,24 @@ const Lights = () => {
     />
   );
 };
+*/
 
 function App() {
   return (
     <>
       <Canvas camera={{ position: [0, 0.5, 5], fov: 42 }}>
-        <OrbitControls />
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 10, 50]} />
-        <group position-y={-1}>
-          <Lights />
-          <Experience />
-        </group>
+        <spotLight position={[0, 1, 5]} intensity={0.4} angle={Math.PI / 20} />
+        <ScrollControls
+          pages={config.sections.length}
+          damping={0.1}
+          maxSpeed={0.2}
+        >
+          <group position-y={-1}>
+            <Experience />
+          </group>
+        </ScrollControls>
       </Canvas>
     </>
   );

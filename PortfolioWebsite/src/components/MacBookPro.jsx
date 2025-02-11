@@ -4,13 +4,19 @@ Command: npx gltfjsx@6.2.3 public/models/MacBook Pro.glb -o src/components/MacBo
 Laptop / MacBook Pro by Alex Safayan [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via Poly Pizza (https://poly.pizza/m/27hcX_w47Jb)
 */
 
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, useVideoTexture } from "@react-three/drei";
 import React from "react";
 
 export function MacBookPro(props) {
   const { nodes, materials } = useGLTF("/models/MacBook Pro.glb");
+  const screenTexture = useVideoTexture("textures/Circuitry.mp4");
+
   return (
     <group {...props} dispose={null}>
+      <mesh position={[0.02, 0.85, -0.66]} scale={1}>
+        <planeGeometry args={[2.55, 1.55]} />
+        <meshBasicMaterial map={screenTexture} />
+      </mesh>
       <mesh
         geometry={nodes.mesh485226736.geometry}
         material={materials.mat16}
