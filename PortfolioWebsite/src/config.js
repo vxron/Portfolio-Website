@@ -4,4 +4,8 @@ export const config = {
     title: "VERONICA",
     subtitle: "MARROCCO",
   },
+  skills: [],
+  experience: [],
+  projects: [],
+  contact: {},
 };

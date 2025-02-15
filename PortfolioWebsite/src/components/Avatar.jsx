@@ -31,7 +31,7 @@ export function Avatar(props) {
   useEffect(() => {
     actions[animation].reset().fadeIn(0.6).play();
     return () => actions[animation].fadeOut(0.6);
-  }, [animation]);
+  }, [animation, actions]);
 
   const scrollData = useScroll();
   // Store previous scroll to get distance between different scrolls (& use ref instead of state to avoid re-renders each time we update lastScroll value)

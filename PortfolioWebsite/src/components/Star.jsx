@@ -19,7 +19,7 @@ export function Star(props) {
     <group {...props} dispose={null} ref={ref}>
       <mesh
         geometry={nodes.star.geometry}
-        material={materials["Yellow.030"]}
+        material={materials["Pink"]}
         rotation={[Math.PI / 2, 0, 0]}
       />
     </group>

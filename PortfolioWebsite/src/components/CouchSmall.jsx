@@ -8,13 +8,13 @@ import { useGLTF } from "@react-three/drei";
 import React from "react";
 
 export function CouchSmall(props) {
-  const { nodes, materials } = useGLTF("/models/Couch Small.glb");
+  const { nodes, materials } = useGLTF("/models/Couch.glb");
   return (
     <group {...props} dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]} scale={100}>
         <mesh
           geometry={nodes.Couch_Small1_1.geometry}
-          material={materials.Couch_Blue}
+          material={materials.Couch_Pink} // can i make this pink?
         />
         <mesh
           geometry={nodes.Couch_Small1_2.geometry}
@@ -25,4 +25,4 @@ export function CouchSmall(props) {
   );
 }
 
-useGLTF.preload("/models/Couch Small.glb");
+useGLTF.preload("/models/Couch.glb");

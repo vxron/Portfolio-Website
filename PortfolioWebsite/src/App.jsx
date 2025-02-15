@@ -6,6 +6,8 @@ import { useRef } from "react";
 import * as THREE from "three";
 import { button, useControls } from "leva";
 import { config } from "./config";
+import { Interface } from "./components/Interface";
+import { motion, MotionConfig } from "motion/react";
 
 /*
 const Lights = () => {
@@ -36,14 +38,21 @@ function App() {
       <Canvas camera={{ position: [0, 0.5, 5], fov: 42 }}>
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 10, 50]} />
-        <spotLight position={[0, 1, 5]} intensity={0.4} angle={Math.PI / 20} />
+        <spotLight
+          position={[0, 2.5, 5]}
+          intensity={0.4}
+          angle={Math.PI / 20}
+          penumbra={0.4}
+        />
         <ScrollControls
           pages={config.sections.length}
           damping={0.1}
           maxSpeed={0.2}
         >
           <group position-y={-1}>
-            <Experience />
+            <MotionConfig transition={{ duration: 0.6 }}>
+              <Experience />
+            </MotionConfig>
           </group>
         </ScrollControls>
       </Canvas>
