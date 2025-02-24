@@ -1,5 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
 :root {
-  --primary-color: #d436ad;
+  --watermelon-pink: #e37383;
+  --hot-pink: #ff69b4;
+  --light-pink: #f8c8dc;
+  --royal-blue: #375ec1;
   --text-color: #1a202c;
   --text-light-color: #555;
 }
@@ -11,7 +17,18 @@
 
 body {
   margin: 0;
-  font-family: "Roboto Slab", serif;
+  font-family: "Poppins", sans-serif;
+}
+
+/* tell browser to account for any border/padding in the heights/widths */
+* {
+  box-sizing: border-box;
+}
+
+/* Hyperlinks */
+a {
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .interface {
@@ -22,8 +39,9 @@ body {
 }
 
 .sections {
-  max-width: 1200px;
+  max-width: 1200px; /* Avoid too large of a section on large screens */
   width: 100%;
+  align-items: center;
 }
 
 .section {
@@ -52,3 +70,202 @@ body {
 .section--middle {
   justify-content: flex-start;
 } /* https://www.w3schools.com/css/css3_flexbox_container.asp */
+
+.poppins-thin {
+  font-family: "Poppins", serif;
+  font-weight: 100;
+  font-style: normal;
+}
+
+.poppins-extralight {
+  font-family: "Poppins", serif;
+  font-weight: 200;
+  font-style: normal;
+}
+
+.poppins-light {
+  font-family: "Poppins", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.poppins-regular {
+  font-family: "Poppins", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.poppins-medium {
+  font-family: "Poppins", serif;
+  font-weight: 500;
+  font-style: normal;
+}
+
+.poppins-semibold {
+  font-family: "Poppins", serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+.poppins-bold {
+  font-family: "Poppins", serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.poppins-extrabold {
+  font-family: "Poppins", serif;
+  font-weight: 800;
+  font-style: normal;
+}
+
+.poppins-black {
+  font-family: "Poppins", serif;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.poppins-thin-italic {
+  font-family: "Poppins", serif;
+  font-weight: 100;
+  font-style: italic;
+}
+
+.poppins-extralight-italic {
+  font-family: "Poppins", serif;
+  font-weight: 200;
+  font-style: italic;
+}
+
+.poppins-light-italic {
+  font-family: "Poppins", serif;
+  font-weight: 300;
+  font-style: italic;
+}
+
+.poppins-regular-italic {
+  font-family: "Poppins", serif;
+  font-weight: 400;
+  font-style: italic;
+}
+
+.poppins-medium-italic {
+  font-family: "Poppins", serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.poppins-semibold-italic {
+  font-family: "Poppins", serif;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.poppins-bold-italic {
+  font-family: "Poppins", serif;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.poppins-extrabold-italic {
+  font-family: "Poppins", serif;
+  font-weight: 800;
+  font-style: italic;
+}
+
+.poppins-black-italic {
+  font-family: "Poppins", serif;
+  font-weight: 900;
+  font-style: italic;
+}
+
+.open-sans-bold {
+  font-family: "Open Sans", serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
+/* HOME SECTION */
+
+/* TODO: DELETE THIS ELEMENT, JUST USEFUL FOR DEBUGGING FOR NOW BUT NOT NEEDED AS WRAPPER FR */
+.element-container {
+  /*background-color: red;*/
+  opacity: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.scroll-down {
+  width: 28px;
+  height: 42px;
+  border: 2px solid var(--watermelon-pink);
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4rem;
+}
+
+.scroll-down__wheel {
+  background: var(--watermelon-pink);
+  width: 3px;
+  height: 10px;
+  border-radius: 2px;
+  margin-top: 4px;
+}
+
+/* SKILLS SECTION */
+
+.skills {
+  padding: 1rem;
+}
+
+.skill {
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  width: 320px;
+  max-width: 100%;
+}
+
+.skill_label {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.skill_label_image {
+  height: 32px;
+  width: 32px;
+}
+
+.skill_label_name {
+  color: var(--text-color);
+  font-size: 0.95rem;
+  margin: 0;
+  font-family: "Poppins", "serif";
+  font-weight: 600;
+}
+
+.skill_level {
+  background: black;
+  height: 8px;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.skill_label_details {
+  font-size: 0.73rem;
+}
+
+.skill_level_bar {
+  background: var(--watermelon-pink);
+  height: 100%;
+  border-radius: 8px;
+  width: 0px; /* Width is 0px by default because we animate it over time in Interface.jsx */
+}

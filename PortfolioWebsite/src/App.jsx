@@ -1,5 +1,10 @@
 /* eslint-disable react/no-unknown-property */
-import { OrbitControls, useHelper, ScrollControls } from "@react-three/drei";
+import {
+  OrbitControls,
+  useHelper,
+  ScrollControls,
+  Scroll,
+} from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
 import { useRef } from "react";
@@ -49,11 +54,18 @@ function App() {
           damping={0.1}
           maxSpeed={0.2}
         >
-          <group position-y={-1}>
-            <MotionConfig transition={{ duration: 0.6 }}>
+          <MotionConfig transition={{ duration: 0.6 }}>
+            <group position-y={-1}>
               <Experience />
+            </group>
+          </MotionConfig>
+          <Scroll html>
+            <MotionConfig transition={{ duration: 1 }}>
+              <group position-y={-1}>
+                <Interface />
+              </group>
             </MotionConfig>
-          </group>
+          </Scroll>
         </ScrollControls>
       </Canvas>
     </>

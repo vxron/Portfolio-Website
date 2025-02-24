@@ -21,7 +21,8 @@ import { MacBookPro } from "./MacBookPro";
 import { PalmTree } from "./PalmTree";
 import { Monitor } from "./Monitor";
 import * as THREE from "three";
-import { motion, MotionConfig, LayoutGroup } from "motion/react";
+import { motion } from "framer-motion-3d";
+//import { motion, MotionConfig, LayoutGroup } from "motion/react";
 
 // Distance along z-axis between sections (as char walks fwd/backward)
 const SECTION_DISTANCE = 10;
@@ -130,6 +131,7 @@ export const Experience = () => {
               rotation-y={-Math.PI}
             />
           </group>
+          {/*
           <mesh position-y={2} position-z={-4} position-x={2}>
             <sphereGeometry args={[1, 64, 64]} />
             <MeshDistortMaterial
@@ -140,6 +142,7 @@ export const Experience = () => {
               color="hotpink"
             />
           </mesh>
+          */}
         </group>
 
         {/* EXPERIENCE */}
