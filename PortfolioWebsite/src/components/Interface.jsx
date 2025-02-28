@@ -46,7 +46,7 @@ export const Interface = () => {
         <section className="section section--right">
           {/* Create smooth "fade in" effect using "visible" tag */}
           <motion.div
-            className="skills"
+            className="skills_div"
             whileInView={"visible"}
             initial={{ opacity: 0 }}
             variants={{ visible: { opacity: 1 } }}
@@ -86,7 +86,36 @@ export const Interface = () => {
         {/* EXPERIENCE */}
         <section className="section section--middle">EXPERIENCE</section>
         {/* PROJECTS */}
-        <section className="section section--left">PROJECTS</section>
+        <section className="section section--left">
+          <motion.div
+            className="projects_div"
+            whileInView={"visible"}
+            initial={{ opacity: 0 }}
+            variants={{ visible: { opacity: 1 } }}
+          >
+            {/* Render div for each project using map */}
+            {config.projects.map((project, index) => (
+              <motion.div
+                key={project.name}
+                className="project"
+                initial={{ opacity: 0 }}
+                variants={{ visible: { opacity: 1 } }}
+                transition={{ duration: 1, delay: index * 0.62 }}
+              >
+                <a href={project.link} target="_blank">
+                  <img
+                    className="project_image"
+                    src={project.image}
+                    alt={project.name}
+                  />
+                  <div className="project_details">
+                    <h2 className="project_details_name">{project.name}</h2>
+                  </div>
+                </a>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
         {/* CONTACT */}
         <section className="section section--left">CONTACT</section>
       </div>

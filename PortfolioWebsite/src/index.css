@@ -72,115 +72,55 @@ a {
 } /* https://www.w3schools.com/css/css3_flexbox_container.asp */
 
 .poppins-thin {
-  font-family: "Poppins", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 100;
   font-style: normal;
 }
 
 .poppins-extralight {
-  font-family: "Poppins", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 200;
   font-style: normal;
 }
 
 .poppins-light {
-  font-family: "Poppins", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 300;
   font-style: normal;
 }
 
 .poppins-regular {
-  font-family: "Poppins", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
 
 .poppins-medium {
-  font-family: "Poppins", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   font-style: normal;
 }
 
-.poppins-semibold {
-  font-family: "Poppins", serif;
-  font-weight: 600;
-  font-style: normal;
-}
-
-.poppins-bold {
-  font-family: "Poppins", serif;
-  font-weight: 700;
-  font-style: normal;
-}
-
-.poppins-extrabold {
-  font-family: "Poppins", serif;
-  font-weight: 800;
-  font-style: normal;
-}
-
-.poppins-black {
-  font-family: "Poppins", serif;
-  font-weight: 900;
-  font-style: normal;
-}
-
-.poppins-thin-italic {
-  font-family: "Poppins", serif;
-  font-weight: 100;
-  font-style: italic;
-}
-
-.poppins-extralight-italic {
-  font-family: "Poppins", serif;
-  font-weight: 200;
-  font-style: italic;
-}
-
-.poppins-light-italic {
-  font-family: "Poppins", serif;
-  font-weight: 300;
-  font-style: italic;
-}
-
 .poppins-regular-italic {
-  font-family: "Poppins", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 400;
   font-style: italic;
 }
 
 .poppins-medium-italic {
-  font-family: "Poppins", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   font-style: italic;
 }
 
 .poppins-semibold-italic {
-  font-family: "Poppins", serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
   font-style: italic;
 }
 
-.poppins-bold-italic {
-  font-family: "Poppins", serif;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.poppins-extrabold-italic {
-  font-family: "Poppins", serif;
-  font-weight: 800;
-  font-style: italic;
-}
-
-.poppins-black-italic {
-  font-family: "Poppins", serif;
-  font-weight: 900;
-  font-style: italic;
-}
-
 .open-sans-bold {
-  font-family: "Open Sans", serif;
+  font-family: "Open Sans", sans-serif;
   font-optical-sizing: auto;
   font-weight: 700;
   font-style: normal;
@@ -218,7 +158,7 @@ a {
 
 /* SKILLS SECTION */
 
-.skills {
+.skills_div {
   padding: 1rem;
 }
 
@@ -248,7 +188,7 @@ a {
   color: var(--text-color);
   font-size: 0.95rem;
   margin: 0;
-  font-family: "Poppins", "serif";
+  font-family: "Poppins", sans-serif;
   font-weight: 600;
 }
 
@@ -268,4 +208,60 @@ a {
   height: 100%;
   border-radius: 8px;
   width: 0px; /* Width is 0px by default because we animate it over time in Interface.jsx */
+}
+
+/* PROJECTS SECTION */
+
+.projects_div {
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    300px
+  ); /* Creates 2 columns since col width is 220px, total width is 500px */
+  width: 750px;
+  max-width: 100%;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.project {
+  background: var(--light-pink);
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.project_image {
+  filter: grayscale(95%);
+  transition: filter 0.2s ease-in-out;
+}
+
+.project:hover .project_image {
+  filter: grayscale(0%);
+}
+
+.project:hover {
+  background: white;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+.project_image {
+  width: 100%;
+  object-fit: cover;
+}
+
+.project_details {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.project_details_name {
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin: 0;
+  font-family: "Poppins", sans-serif;
 }
