@@ -4,11 +4,17 @@ import { useState } from "react";
 //import { motion } from "framer-motion";
 import { motion } from "motion/react";
 import { config } from "../config";
+import { atom, useAtom } from "jotai";
+
+// Global state, which we can use/call from any component globally (used for Projects section)
+export const projectAtom = atom(config.projects[0]);
 
 export const Interface = () => {
   // State to know if user has already scrolled (initially false)
   const [hasScrolled, setHasScrolled] = useState(false);
   const scrollData = useScroll();
+
+  const [_project, setProject] = useAtom(projectAtom);
 
   // Update hasScrolled state if user has scrolled using scroll data
   useFrame(() => {
@@ -60,7 +66,7 @@ export const Interface = () => {
                 className="skill"
                 initial={{ opacity: 0 }}
                 variants={{ visible: { opacity: 1 } }}
-                transition={{ duration: 1, delay: index * 0.62 }}
+                transition={{ duration: 2, delay: index * 0.6 }}
               >
                 <div className="skill_label">
                   <img
@@ -99,6 +105,7 @@ export const Interface = () => {
                 key={project.name}
                 className="project"
                 initial={{ opacity: 0 }}
+                onMouseEnter={() => setProject(project)}
                 variants={{ visible: { opacity: 1 } }}
                 transition={{ duration: 1, delay: index * 0.62 }}
               >

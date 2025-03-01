@@ -21,16 +21,14 @@ import { MacBookPro } from "./MacBookPro";
 import { PalmTree } from "./PalmTree";
 import { Monitor } from "./Monitor";
 import * as THREE from "three";
-import { motion } from "framer-motion-3d";
-//import { motion, MotionConfig, LayoutGroup } from "motion/react";
+//#import { motion } from "framer-motion-3d";
+import { MonitorScreen } from "./MonitorScreen";
+import { motion, MotionConfig, LayoutGroup } from "motion/react";
 
 // Distance along z-axis between sections (as char walks fwd/backward)
 const SECTION_DISTANCE = 10;
-
-// Variants for animating sections (hiding/unhiding)
-const variants = {
-  home: { y: 0 },
-};
+// Transition speed between sections (higher = slower fade)
+const FADE_SPEED = 0.05;
 
 export const Experience = () => {
   // State machine for revealing/hiding sections (starting at home page)
@@ -38,6 +36,18 @@ export const Experience = () => {
 
   const sceneContainer = useRef();
   const scrollData = useScroll();
+
+  // Continuously store opacity for each section group in a map array (basically a dict)
+  // by default, opacity state gets set to 1 when the section_name from config.js matches current section, 0 for others
+  // use useRef instead of useState to avoid setting states in useFrame thereby avoid triggering re-renders
+  const sectionOpacity = useRef(
+    Object.fromEntries(
+      config.sections.map((section_name) => [
+        section_name,
+        section_name == section ? 1 : 0,
+      ])
+    )
+  );
 
   // Animate sceneContainer group to move through different sections
   useFrame(() => {
@@ -49,17 +59,54 @@ export const Experience = () => {
     setSection(
       config.sections[Math.round(scrollData.offset * (scrollData.pages - 1))]
     );
+
+    // Update all section opacities directly without triggering re-renders
+
+    // Set opacity TARGET to be 1 for current section and 0 for others
+    sectionOpacity.current = Object.fromEntries(
+      config.sections.map((section_name) => [
+        section_name,
+        section_name === section ? 1 : 0,
+      ])
+    );
+
+    /* Make sure scene is loaded, then traverse all children of sceneContainer (basically everything),
+    and apply correct opacities based on above */
+    /* Linear Interpolation logic:
+    --> start is current material opacity, 
+    --> target is invisible (0) if leaving section, otherwise (1) if it's current section based on above,
+    --> transition is fade_speed */
+    var parent_section = "home";
+    if (sceneContainer.current) {
+      sceneContainer.current.traverse((child) => {
+        // each time we're iterating through new section recursively, change the current section name to reflect current section
+        if (child.parent == sceneContainer.current) {
+          parent_section = child.name;
+        }
+        if (child.isMesh && child.material) {
+          // Apply opacity transition for each section's elements
+          // if not 0, target is 1
+          const targetOpacity = sectionOpacity.current[parent_section] || 0;
+          // Smoothly interpolate the opacity
+          child.material.opacity = THREE.MathUtils.lerp(
+            child.material.opacity,
+            targetOpacity,
+            FADE_SPEED
+          );
+          child.material.transparent = true; // Ensure transparency is applied
+        }
+      });
+    }
   });
-  console.log(section);
 
   return (
     <>
       <Environment preset="sunset" />
       <Avatar />
       {/* Group containing different website sections; must match array defined in config.js */}
-      <motion.group ref={sceneContainer} animate={section}>
+      <group ref={sceneContainer} animate={section}>
         {/* HOME */}
-        <motion.group variants={variants} position-y={-5}>
+        <group name="home">
           <Star
             position-x={-0.009}
             position-z={0}
@@ -111,10 +158,10 @@ export const Experience = () => {
               {config.home.subtitle}
             </SectionTitle>
           </Center>
-        </motion.group>
+        </group>
 
         {/* SKILLS */}
-        <group position-z={SECTION_DISTANCE}>
+        <group position-z={SECTION_DISTANCE} name="skills">
           <group position-x={-2}>
             <SectionTitle position-x={0.4}>SKILLS</SectionTitle>
             <BookCase position-z={-2} />
@@ -131,27 +178,15 @@ export const Experience = () => {
               rotation-y={-Math.PI}
             />
           </group>
-          {/*
-          <mesh position-y={2} position-z={-4} position-x={2}>
-            <sphereGeometry args={[1, 64, 64]} />
-            <MeshDistortMaterial
-              opacity={0.8}
-              transparent
-              distort={1}
-              speed={5}
-              color="hotpink"
-            />
-          </mesh>
-          */}
         </group>
 
         {/* EXPERIENCE */}
-        <group position-z={SECTION_DISTANCE * 2}>
+        <group position-z={SECTION_DISTANCE * 2} name="experience">
           <SectionTitle position-x={0.4}>EXPERIENCE</SectionTitle>
         </group>
 
         {/* PROJECTS */}
-        <group position-z={SECTION_DISTANCE * 3}>
+        <group position-z={SECTION_DISTANCE * 3} name="projects">
           <group position-x={1}>
             <SectionTitle
               position-x={-0.5}
@@ -167,6 +202,11 @@ export const Experience = () => {
               rotation-y={-Math.PI / 6}
               scale={0.8}
             >
+              <MonitorScreen
+                rotation-x={-0.18}
+                position-z={-0.895}
+                position-y={1.74}
+              ></MonitorScreen>
               <Monitor
                 scale={0.02}
                 position-y={1}
@@ -181,10 +221,10 @@ export const Experience = () => {
         </group>
 
         {/* CONTACT */}
-        <group position-z={SECTION_DISTANCE * 4}>
+        <group position-z={SECTION_DISTANCE * 4} name="contact">
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
         </group>
-      </motion.group>
+      </group>
     </>
   );
 };

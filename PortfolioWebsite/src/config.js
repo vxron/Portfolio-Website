@@ -50,7 +50,7 @@ export const config = {
     {
       name: "Monitor & Alarm System for Neck Posture",
       description: "",
-      image: "",
+      image: "projects/pink-bg.jpg",
       link: "",
       tags: [],
     },
@@ -71,7 +71,7 @@ export const config = {
     {
       name: "Design of XOR Gate with CMOS Logic",
       description: "",
-      image: "",
+      image: "projects/pink-bg.jpg",
       link: "",
       tags: [],
     },
@@ -85,7 +85,7 @@ export const config = {
     {
       name: "AC to DC Power Converter",
       description: "",
-      image: "",
+      image: "projects/pink-bg.jpg",
       link: "",
       tags: [],
     },

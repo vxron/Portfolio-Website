@@ -43,7 +43,7 @@ export function Avatar(props) {
     const scrollDelta = scrollData.offset - lastScroll.current;
     let walkingDir = 0;
     // If we have scrolled fwd or backward, set animation state to walking
-    if (Math.abs(scrollDelta) > 0.00001) {
+    if (Math.abs(scrollDelta) > 0.0001) {
       setAnimation("Walking");
       if (scrollDelta > 0) {
         // Moving forward
@@ -58,7 +58,7 @@ export function Avatar(props) {
     group.current.rotation.y = THREE.MathUtils.lerp(
       group.current.rotation.y,
       walkingDir,
-      0.1
+      0.08
     );
     lastScroll.current = scrollData.offset; // Update last scroll value
   });
