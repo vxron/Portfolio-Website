@@ -5,12 +5,13 @@ Star by Kay Lousberg (https://market.pmnd.rs/model/star)
 */
 
 import { useGLTF } from "@react-three/drei";
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 
 export function Star(props) {
   const { nodes, materials } = useGLTF("/models/Star.gltf");
   const ref = useRef();
+
   useFrame(() => {
     ref.current.rotation.y += 0.06;
   });

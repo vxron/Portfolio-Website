@@ -13,6 +13,7 @@ import { button, useControls } from "leva";
 import { config } from "./config";
 import { Interface } from "./components/Interface";
 import { motion, MotionConfig } from "motion/react";
+import { FlipBook } from "./components/FlipBook";
 
 /*
 const Lights = () => {

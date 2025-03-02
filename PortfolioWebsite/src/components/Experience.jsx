@@ -26,6 +26,7 @@ import { MonitorScreen } from "./MonitorScreen";
 import { motion, MotionConfig, LayoutGroup } from "motion/react";
 //import { useSectionState } from "../States";
 //import { SectionContext } from "../States";
+import { FlipBook } from "./FlipBook";
 
 // Distance along z-axis between sections (as char walks fwd/backward)
 const SECTION_DISTANCE = 10;
@@ -188,6 +189,7 @@ export const Experience = ({ setSection_prop }) => {
         {/* EXPERIENCE */}
         <group position-z={SECTION_DISTANCE * 2} name="experience">
           <SectionTitle position-x={0.4}>EXPERIENCE</SectionTitle>
+          <FlipBook />
         </group>
 
         {/* PROJECTS */}
