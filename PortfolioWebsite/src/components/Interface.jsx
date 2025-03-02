@@ -5,6 +5,8 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { config } from "../config";
 import { atom, useAtom } from "jotai";
+//import { useSectionState } from "../States";
+import { useSection } from "../States";
 
 // Global state, which we can use/call from any component globally (used for Projects section)
 export const projectAtom = atom(config.projects[0]);
@@ -14,6 +16,7 @@ export const Interface = () => {
   const [hasScrolled, setHasScrolled] = useState(false);
   const scrollData = useScroll();
 
+  // Global vars
   const [_project, setProject] = useAtom(projectAtom);
 
   // Update hasScrolled state if user has scrolled using scroll data

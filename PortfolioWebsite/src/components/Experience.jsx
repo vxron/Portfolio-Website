@@ -24,18 +24,22 @@ import * as THREE from "three";
 //#import { motion } from "framer-motion-3d";
 import { MonitorScreen } from "./MonitorScreen";
 import { motion, MotionConfig, LayoutGroup } from "motion/react";
+//import { useSectionState } from "../States";
+//import { SectionContext } from "../States";
 
 // Distance along z-axis between sections (as char walks fwd/backward)
 const SECTION_DISTANCE = 10;
 // Transition speed between sections (higher = slower fade)
 const FADE_SPEED = 0.05;
 
-export const Experience = () => {
+export const Experience = ({ setSection_prop }) => {
   // State machine for revealing/hiding sections (starting at home page)
   const [section, setSection] = useState(config.sections[0]);
 
   const sceneContainer = useRef();
   const scrollData = useScroll();
+
+  //const setGlobalSection = useSectionState((state) => state.setSection);
 
   // Continuously store opacity for each section group in a map array (basically a dict)
   // by default, opacity state gets set to 1 when the section_name from config.js matches current section, 0 for others
@@ -59,6 +63,7 @@ export const Experience = () => {
     setSection(
       config.sections[Math.round(scrollData.offset * (scrollData.pages - 1))]
     );
+    //setGlobalSection(section);
 
     // Update all section opacities directly without triggering re-renders
 

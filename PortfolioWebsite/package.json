@@ -20,7 +20,8 @@
     "motion": "^12.4.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "three": "^0.159.0"
+    "three": "^0.159.0",
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.20.0",

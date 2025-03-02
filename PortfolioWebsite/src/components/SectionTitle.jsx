@@ -8,7 +8,7 @@ export const SectionTitle = ({ children, ...props }) => {
   return (
     <Text3D font={"fonts/Inter_Bold.json"} size={0.3} {...props}>
       {children}
-      <meshStandardMaterial color="white" />
+      <meshStandardMaterial color={0xdcdcdc} />
     </Text3D>
   );
 };

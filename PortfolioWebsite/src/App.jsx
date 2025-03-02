@@ -7,7 +7,7 @@ import {
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
-import { useRef } from "react";
+import { useState } from "react";
 import * as THREE from "three";
 import { button, useControls } from "leva";
 import { config } from "./config";
