@@ -127,7 +127,31 @@ export const Interface = () => {
           </motion.div>
         </section>
         {/* CONTACT */}
-        <section className="section section--left">CONTACT</section>
+        <section className="section section--left">
+          <motion.div
+            className="contact"
+            whileInView={"visible"}
+            initial={{ opacity: 0 }}
+            variants={{ visible: { opacity: 1 } }}
+          >
+            <h1 className="contact_name">{config.contact.name}</h1>
+            <div className="contact_socials">
+              <p className="contact_socials_phone">
+                {config.contact.socials.phone}
+              </p>
+              <p className="contact_socials_mail">
+                {config.contact.socials.mail}
+              </p>
+              <a href={config.contact.socials.linkedin} target="_blank">
+                <img
+                  className="contact_socials_icon"
+                  src="icons/linkedin.png"
+                  alt="LinkedIn"
+                />
+              </a>
+            </div>
+          </motion.div>
+        </section>
       </div>
     </div>
   );

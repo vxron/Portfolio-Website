@@ -166,5 +166,15 @@ export const config = {
       tags: [],
     },
   ],
-  contact: { mail: "vlmarrocco@gmail.com" },
+  contact: {
+    name: "Veronica Marrocco",
+    location: "Toronto, ON",
+    socials: {
+      linkedin: "https://www.linkedin.com/in/vlmarrocco/",
+      github: "https://github.com/vxron",
+      mail: "vlmarrocco@gmail.com",
+      phone: "905-243-2030",
+    },
+    resume: "",
+  },
 };

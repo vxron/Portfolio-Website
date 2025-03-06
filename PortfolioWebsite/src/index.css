@@ -5,6 +5,7 @@
   --watermelon-pink: #e37383;
   --hot-pink: #ff69b4;
   --light-pink: #f8c8dc;
+  --vlight-pink: #f8e2eb;
   --royal-blue: #375ec1;
   --text-color: #1a202c;
   --text-light-color: #555;
@@ -265,4 +266,64 @@ a {
   font-size: 0.8rem;
   margin: 0;
   font-family: "Poppins", sans-serif;
+}
+
+/* CONTACT SECTION */
+
+.contact {
+  margin: 1rem;
+  padding: 1rem;
+  background: var(--vlight-pink);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  min-width: 280px;
+}
+
+.contact_name {
+  color: var(--text-color);
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.contact_socials {
+  display: flex;
+  gap: 1rem; /*gap between icons*/
+  margin-top: 1rem;
+}
+
+.contact_socials_icon {
+  height: 32px;
+  width: 32px;
+}
+
+/* MENU BAR */
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  left: 4rem;
+  right: 4rem;
+  background: #f5f3ef8a;
+  backdrop-filter: blur(8px);
+}
+
+.menu_buttons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.menu_button {
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.menu_button:hover {
+  color: var(--watermelon-pink);
+  cursor: pointer;
 }

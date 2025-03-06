@@ -29,7 +29,7 @@ import { motion, MotionConfig, LayoutGroup } from "motion/react";
 import { FlipBook } from "./FlipBook";
 
 // Distance along z-axis between sections (as char walks fwd/backward)
-const SECTION_DISTANCE = 10;
+const SECTION_DISTANCE = 15;
 // Transition speed between sections (higher = slower fade)
 const FADE_SPEED = 0.05;
 
@@ -189,7 +189,18 @@ export const Experience = ({ setSection_prop }) => {
         {/* EXPERIENCE */}
         <group position-z={SECTION_DISTANCE * 2} name="experience">
           <SectionTitle position-x={0.4}>EXPERIENCE</SectionTitle>
-          <FlipBook />
+          <Float
+            rotation-x={-Math.PI / 7}
+            floatIntensity={0.5}
+            speed={2}
+            rotationIntensity={1}
+          >
+            <FlipBook position-y={1} />
+          </Float>
+          <mesh position-y={-1.5} rotation-x={-Math.PI / 2} receiveShadow>
+            <planeGeometry args={[100, 100]}></planeGeometry>
+            <shadowMaterial transparent opacity={0.2} />
+          </mesh>
         </group>
 
         {/* PROJECTS */}
