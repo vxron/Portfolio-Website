@@ -27,6 +27,8 @@ const PAGE_DEPTH = 0.003;
 const PAGE_SEGMENTS = 30; // moveable width segments ("skeleton")
 const SEGMENT_WIDTH = PAGE_WIDTH / PAGE_SEGMENTS;
 const LERP_FACTOR = 0.05;
+const INSIDE_CURVE_STRENGTH = 0.18; // controls inner curve of flipbook
+const OUTSIDE_CURVE_STRENGTH = 0.035;
 
 // Have outside to avoid re-renders since all pages will have same geometry
 const pageGeometry = new BoxGeometry(
@@ -177,11 +179,25 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
 
     const bones = skinnedMeshRef.current.skeleton.bones;
     // make the transition smooth between page turns to reach targetRot from current
-    bones[0].rotation.y = MathUtils.lerp(
-      bones[0].rotation.y,
-      targetRotation,
-      LERP_FACTOR
-    );
+    // create page flip rotation on all bones
+    for (let i = 0; i < bones.length; i++) {
+      const target = i === 0 ? group.current : bones[i]; // creating inside curve
+
+      // we need to impact each bone with right amount of strength
+      // for flipbook's INSIDE CURVE: (first 8 bones) --> use sin(x*0.2 + 0.25) so that first bone has a bit of rotation, then it'll peak a few bones later, and re-descend
+      const insideCurveIntensity = i < 8 ? Math.sin(i * 0.2 + 0.15) : 0;
+      const outsideCurveIntensity = i >= 8 ? Math.cos(i * 0.3 + 0.09) : 0; // now we need it to go down and up so use a cos
+
+      let rotationAngle =
+        INSIDE_CURVE_STRENGTH * insideCurveIntensity * targetRotation -
+        OUTSIDE_CURVE_STRENGTH * outsideCurveIntensity * targetRotation;
+
+      target.rotation.y = MathUtils.lerp(
+        target.rotation.y,
+        rotationAngle,
+        LERP_FACTOR
+      );
+    }
   });
 
   return (
