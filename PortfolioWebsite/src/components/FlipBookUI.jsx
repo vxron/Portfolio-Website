@@ -1,5 +1,6 @@
-import { atom, useAtom } from "jotai";
-import { useEffect } from "react";
+// THIS FILE HANDLES FLIPBOOK STATE (PAGEATOM) AND DATA (PAGES)
+
+import { atom } from "jotai";
 import { config } from "../config";
 
 // Get images from config
@@ -31,9 +32,11 @@ pages.push({
   back: "exp_images/pink-bg.jpg",
 });
 
+/*
 export const UI = () => {
   const [page, setPage] = useAtom(pageAtom);
 
+  
   return (
     <>
       <main className=" pointer-events-none select-none z-10 fixed  inset-0  flex justify-between flex-col">
@@ -68,3 +71,4 @@ export const UI = () => {
     </>
   );
 };
+*/

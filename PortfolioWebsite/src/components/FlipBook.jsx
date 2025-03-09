@@ -1,5 +1,5 @@
-// loll make them all like pink and stuff like this super girly and cute make it a girly booklet lol like a princess book
-// maybe ur avatar driving a pink tesla, ur avatar as an astronaut in a rocket ship, ur avatar with pink wires for nokia, etc etc
+// THIS FILE HANDLES FLIPBOOK RENDERING
+
 import { useRef, useState, useEffect, useMemo } from "react";
 import { BoxGeometry } from "three";
 import { useFrame } from "@react-three/fiber";
@@ -36,6 +36,15 @@ const pageGeometry = new BoxGeometry(
   PAGE_SEGMENTS,
   2 // height segments
 );
+
+// Function to turn page on user click
+const handlePageTurn = (page, setPage) => {
+  if (page < pages.length) {
+    setPage(page + 1); // Turn to next page
+  } else {
+    setPage(0); // Reset to cover if at last page
+  }
+};
 
 pageGeometry.translate(PAGE_WIDTH / 2, 0, 0);
 
@@ -93,6 +102,7 @@ const pageMaterials = [
 
 // preload front and back of book, which is same texture for now
 useTexture.preload(`/exp_images/pink-bg.jpg`);
+useTexture.preload(`/exp_images/TESLA.png`);
 
 // Custom Page Component
 // Book is achieved using BoxGeometry 3D material
@@ -100,7 +110,7 @@ useTexture.preload(`/exp_images/pink-bg.jpg`);
 const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
   // load picture textures for front/back of book
   const [picture_front, picture_back] = useTexture([
-    `/exp_images/pink-bg.jpg`,
+    `/exp_images/TESLA.png`,
     `/exp_images/pink-bg.jpg`,
   ]);
 
@@ -188,9 +198,14 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
 // for each page, render "Page" component
 // need to keep track of which page we're currently on with useAtom
 export const FlipBook = ({ ...props }) => {
-  const [page] = useAtom(pageAtom);
+  const [page, setPage] = useAtom(pageAtom); // Get global page state
+
   return (
-    <group {...props} rotation-y={-Math.PI / 2}>
+    <group
+      {...props}
+      rotation-y={-Math.PI / 2}
+      onClick={() => handlePageTurn(page, setPage)} // Explicitly pass page & setPage
+    >
       {[...pages].map((pageData, page_num) => (
         <Page
           key={page_num}

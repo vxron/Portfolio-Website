@@ -13,7 +13,7 @@ import { button, useControls } from "leva";
 import { config } from "./config";
 import { Interface } from "./components/Interface";
 import { motion, MotionConfig } from "motion/react";
-import { UI } from "./components/FlipBookUI";
+//import { UI } from "./components/FlipBookUI";
 import { MeshNormalMaterial } from "three";
 import { Menu } from "./components/Menu";
 
@@ -43,7 +43,6 @@ const Lights = () => {
 function App() {
   return (
     <>
-      <UI />
       <Canvas camera={{ position: [0, 0.5, 5], fov: 42 }}>
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 10, 50]} />

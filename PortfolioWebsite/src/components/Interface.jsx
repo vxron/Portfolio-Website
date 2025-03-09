@@ -1,12 +1,16 @@
 import { useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 //import { motion } from "framer-motion";
 import { motion } from "motion/react";
 import { config } from "../config";
 import { atom, useAtom } from "jotai";
 //import { useSectionState } from "../States";
 import { useSection } from "../States";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Global state, which we can use/call from any component globally (used for Projects section)
 export const projectAtom = atom(config.projects[0]);
@@ -15,6 +19,10 @@ export const Interface = () => {
   // State to know if user has already scrolled (initially false)
   const [hasScrolled, setHasScrolled] = useState(false);
   const scrollData = useScroll();
+  // State to track skills visibility
+  //const [showSkills, setShowSkills] = useState(false); // State to track skills visibility
+  // State to track projects visibility
+  // State to track contact visibility
 
   // Global vars
   const [_project, setProject] = useAtom(projectAtom);
@@ -23,7 +31,45 @@ export const Interface = () => {
   useFrame(() => {
     setHasScrolled(scrollData.offset > 0); // Won't cause re-renders unless it's true which will happen once
   });
-
+  /*
+  useEffect(() => {
+    if (section === 'skills') {
+      setShowSkills(true);  // Show skills HTML when 3D skills section is visible
+    } else {
+      setShowSkills(false); // Hide skills HTML when 3D skills section is not visible
+    }
+  }, [section]); // Re-run whenever section changes
+  */
+  /*
+  // Use useEffect to trigger GSAP scroll-based animations for HTML content
+  useEffect(() => {
+    // Set ScrollTrigger on the 3D scene for skills section
+    ScrollTrigger.create({
+      trigger: ".skills_3d_scene", // Target your 3D scene for the skills section
+      start: "top bottom", // Start when the top of the 3D scene reaches the bottom of the viewport
+      end: "bottom top", // End when the bottom of the 3D scene reaches the top of the viewport
+      onEnter: () => setShowSkills(true), // Show skills when the 3D scene enters the viewport
+      onLeave: () => setShowSkills(false), // Hide skills if the 3D scene leaves the viewport
+      scrub: true, // Ensures smooth scrolling sync
+    });
+    */
+  /*
+    gsap.fromTo(
+      ".skills_div",
+      { opacity: 0, y: 100 }, // element starts higher up for "slide-in transition"
+      {
+        opacity: showSkills ? 1 : 0, // Show skills only when showSkills is true
+        y: showSkills ? 0 : 100, // Slide up only when showSkills is true
+        scrollTrigger: {
+          trigger: ".skills_div",
+          start: "top 80%", // ensure smooth transition
+          scrub: true,
+        },
+      }
+    );
+    
+  }, [scrollData.offset, showSkills]); // Re-run this effect every time scroll offset or showSkills state changes
+*/
   return (
     // Div Class "interface" will act as main HTML container
     <div className="interface">
@@ -57,8 +103,8 @@ export const Interface = () => {
           <motion.div
             className="skills_div"
             whileInView={"visible"}
-            initial={{ opacity: 0 }}
             variants={{ visible: { opacity: 1 } }}
+            initial={{ opacity: 0 }}
           >
             {/* Map to render 1 skill per object, wrapped in motion divs so we can animate them individually */}
             {/* .map method creates a new array by applying a function to each element of an existing array */}

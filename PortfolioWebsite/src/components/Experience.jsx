@@ -27,13 +27,17 @@ import { motion, MotionConfig, LayoutGroup } from "motion/react";
 //import { useSectionState } from "../States";
 //import { SectionContext } from "../States";
 import { FlipBook } from "./FlipBook";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 // Distance along z-axis between sections (as char walks fwd/backward)
 const SECTION_DISTANCE = 15;
 // Transition speed between sections (higher = slower fade)
 const FADE_SPEED = 0.05;
 
-export const Experience = ({ setSection_prop }) => {
+export const Experience = () => {
   // State machine for revealing/hiding sections (starting at home page)
   const [section, setSection] = useState(config.sections[0]);
 
@@ -101,6 +105,25 @@ export const Experience = ({ setSection_prop }) => {
           );
           child.material.transparent = true; // Ensure transparency is applied
         }
+        // Handle opacity for entire section group
+        /*
+        if (child.isGroup) {
+          // For the entire group, adjust the opacity based on section visibility
+          const groupOpacity = sectionOpacity.current[parent_section] || 0;
+          if (child.name === "experience") {
+            child.traverse((descendant) => {
+              if (descendant.material) {
+                descendant.material.opacity = THREE.MathUtils.lerp(
+                  descendant.material.opacity,
+                  groupOpacity,
+                  FADE_SPEED
+                );
+                descendant.material.transparent = true;
+              }
+            });
+          }
+        }
+          */
       });
     }
   });
