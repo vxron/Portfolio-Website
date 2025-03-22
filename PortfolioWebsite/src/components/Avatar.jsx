@@ -10,7 +10,7 @@ import { useFrame } from "@react-three/fiber";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
 
-export function Avatar(props) {
+export function Avatar({ hideAvatar, ...props }) {
   const { nodes, materials } = useGLTF("/models/67a7f88926adc938cec34756.glb");
   const { animations: idleAnimation } = useFBX("/animations/Idle.fbx");
   const { animations: walkingAnimation } = useFBX("/animations/Walking.fbx");
@@ -39,6 +39,22 @@ export function Avatar(props) {
 
   // Logic to decide when avatar should be walking (on scroll) and when it should be idle
   useFrame(() => {
+    // Hide avatar when it should be hidden by making opacity 0
+    if (!group.current) return;
+    group.current.traverse((child) => {
+      if (child.isMesh && child.material) {
+        const targetOpacity = hideAvatar ? 0 : 1;
+        const materials = Array.isArray(child.material)
+          ? child.material
+          : [child.material];
+
+        materials.forEach((mat) => {
+          if (mat.transparent !== true) mat.transparent = true;
+          mat.opacity = THREE.MathUtils.lerp(mat.opacity, targetOpacity, 0.1);
+        });
+      }
+    });
+
     // Get scroll delta btwn current scroll pos and last scroll pos
     const scrollDelta = scrollData.offset - lastScroll.current;
     let walkingDir = 0;

@@ -40,6 +40,8 @@ const FADE_SPEED = 0.05;
 export const Experience = () => {
   // State machine for revealing/hiding sections (starting at home page)
   const [section, setSection] = useState(config.sections[0]);
+  // State machine for flipbook
+  const [bookOpen, setBookOpen] = useState(false);
 
   const sceneContainer = useRef();
   const scrollData = useScroll();
@@ -131,7 +133,8 @@ export const Experience = () => {
   return (
     <>
       <Environment preset="sunset" />
-      <Avatar />
+      {/* Render avatar; Hide avatar when book opens */}
+      <Avatar hideAvatar={section === "experience" && bookOpen} />
       {/* Group containing different website sections; must match array defined in config.js */}
       <group ref={sceneContainer} animate={section}>
         {/* HOME */}
@@ -211,14 +214,21 @@ export const Experience = () => {
 
         {/* EXPERIENCE */}
         <group position-z={SECTION_DISTANCE * 2} name="experience">
-          <SectionTitle position-x={0.4}>EXPERIENCE</SectionTitle>
+          {!bookOpen && (
+            <SectionTitle position-x={0.4}>EXPERIENCE</SectionTitle>
+          )}
+          {/* Hide title when book opens */}
           <Float
             rotation-x={-Math.PI / 7}
             floatIntensity={0.5}
             speed={2}
             rotationIntensity={1}
           >
-            <FlipBook position-y={1} />
+            <FlipBook
+              setBookOpen={setBookOpen}
+              position-y={1}
+              position-z={0.5}
+            />
           </Float>
           <mesh position-y={-1.5} rotation-x={-Math.PI / 2} receiveShadow>
             <planeGeometry args={[100, 100]}></planeGeometry>

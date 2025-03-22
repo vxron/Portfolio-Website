@@ -5,21 +5,32 @@ import { config } from "../config";
 
 // Get images from config
 const num_exps = config.experience.length;
-const experienceImages = [];
+const experienceImages = [
+  "TESLA",
+  "nokia",
+  "TA",
+  "mdafinal",
+  "research",
+  "uhn",
+];
+
+/*
 config.experience.forEach((exp) => {
   if (exp.image) {
     experienceImages.push(exp.image);
   }
 });
+*/
 
 export const pageAtom = atom(0);
 export const pages = [
   {
-    front: "exp_images/pink-bg.jpg",
-    back: "exp_images/pink-bg.jpg",
+    front: "research", // front cover of book
+    back: "research",
   },
 ];
 
+// all pages
 for (let i = 1; i < num_exps - 1; i += 2) {
   pages.push({
     front: experienceImages[i % num_exps],
@@ -27,9 +38,10 @@ for (let i = 1; i < num_exps - 1; i += 2) {
   });
 }
 
+// back cover of book
 pages.push({
   front: experienceImages[num_exps - 1],
-  back: "exp_images/pink-bg.jpg",
+  back: "research",
 });
 
 /*

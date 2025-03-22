@@ -545,7 +545,7 @@
     "@react-spring/rafz" "~9.7.5"
     "@react-spring/types" "~9.7.5"
 
-"@react-spring/three@~9.7.5":
+"@react-spring/three@^9.7.5", "@react-spring/three@~9.7.5":
   version "9.7.5"
   resolved "https://registry.npmjs.org/@react-spring/three/-/three-9.7.5.tgz"
   integrity sha512-RxIsCoQfUqOS3POmhVHa1wdWS0wyHAUway73uRLp3GAL5U2iYVNdnzQsep6M2NZ994BlW8TcKuMtQHUqOsy6WA==

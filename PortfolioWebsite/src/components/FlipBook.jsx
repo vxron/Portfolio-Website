@@ -12,6 +12,7 @@ import {
   MathUtils,
   MeshStandardMaterial,
 } from "three";
+import * as THREE from "three";
 import { pageAtom, pages } from "./FlipBookUI";
 import { Uint16BufferAttribute, Float32BufferAttribute } from "three";
 import { Skeleton } from "three";
@@ -19,6 +20,8 @@ import { useHelper } from "@react-three/drei";
 import { SkeletonHelper } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { useTexture } from "@react-three/drei";
+import { useCursor } from "@react-three/drei";
+import { useSpring, a } from "@react-spring/three"; // To smoothly resize flipbook
 
 // play around w these lol
 const PAGE_WIDTH = 1.28;
@@ -28,7 +31,7 @@ const PAGE_SEGMENTS = 30; // moveable width segments ("skeleton")
 const SEGMENT_WIDTH = PAGE_WIDTH / PAGE_SEGMENTS;
 const LERP_FACTOR = 0.05;
 const INSIDE_CURVE_STRENGTH = 0.18; // controls inner curve of flipbook
-const OUTSIDE_CURVE_STRENGTH = 0.035;
+const OUTSIDE_CURVE_STRENGTH = 0.03;
 
 // Have outside to avoid re-renders since all pages will have same geometry
 const pageGeometry = new BoxGeometry(
@@ -38,15 +41,6 @@ const pageGeometry = new BoxGeometry(
   PAGE_SEGMENTS,
   2 // height segments
 );
-
-// Function to turn page on user click
-const handlePageTurn = (page, setPage) => {
-  if (page < pages.length) {
-    setPage(page + 1); // Turn to next page
-  } else {
-    setPage(0); // Reset to cover if at last page
-  }
-};
 
 pageGeometry.translate(PAGE_WIDTH / 2, 0, 0);
 
@@ -110,10 +104,10 @@ useTexture.preload(`/exp_images/TESLA.png`);
 // Book is achieved using BoxGeometry 3D material
 // SkinnedMesh has skeleton with bones so we can animate the vertices of the geometry
 const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
-  // load picture textures for front/back of book
-  const [picture_front, picture_back] = useTexture([
-    `/exp_images/TESLA.png`,
-    `/exp_images/pink-bg.jpg`,
+  // load picture textures for all pages in book
+  const [picture_1, picture_2] = useTexture([
+    `/exp_images/${front}.png`,
+    `/exp_images/${back}.png`,
   ]);
 
   const group = useRef();
@@ -143,12 +137,12 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
       ...pageMaterials,
       new MeshStandardMaterial({
         color: whiteColor,
-        map: picture_front, // front image
+        map: picture_1, // front image
         roughness: 0.1, // all other pages get 0.1 roughness (glossy paper), matte would be 1
       }),
       new MeshStandardMaterial({
         color: whiteColor,
-        map: picture_back, // back image
+        map: picture_2, // back image
         roughness: 0.1,
       }),
     ];
@@ -185,12 +179,21 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
 
       // we need to impact each bone with right amount of strength
       // for flipbook's INSIDE CURVE: (first 8 bones) --> use sin(x*0.2 + 0.25) so that first bone has a bit of rotation, then it'll peak a few bones later, and re-descend
-      const insideCurveIntensity = i < 8 ? Math.sin(i * 0.2 + 0.15) : 0;
+      const insideCurveIntensity = i < 8 ? Math.sin(i * 0.2 + 0.2) : 0;
       const outsideCurveIntensity = i >= 8 ? Math.cos(i * 0.3 + 0.09) : 0; // now we need it to go down and up so use a cos
 
       let rotationAngle =
         INSIDE_CURVE_STRENGTH * insideCurveIntensity * targetRotation -
         OUTSIDE_CURVE_STRENGTH * outsideCurveIntensity * targetRotation;
+
+      // don't want bent shape when book is closed, only first bone should have target rot
+      if (bookClosed) {
+        if (i === 0) {
+          rotationAngle = targetRotation;
+        } else {
+          rotationAngle = 0;
+        }
+      }
 
       target.rotation.y = MathUtils.lerp(
         target.rotation.y,
@@ -213,25 +216,103 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
 
 // for each page, render "Page" component
 // need to keep track of which page we're currently on with useAtom
-export const FlipBook = ({ ...props }) => {
+export const FlipBook = ({ setBookOpen, ...props }) => {
   const [page, setPage] = useAtom(pageAtom); // Get global page state
+  const [hovered, setHovered] = useState(false); // State for hovering on flipbook
+  const [isBookOpen, setIsBookOpen] = useState(false);
+  const backgroundRef = useRef();
+  useCursor(hovered);
+
+  // Open/Close Animation Constants
+  const { position, scale } = useSpring({
+    position: isBookOpen ? [0, 0, 0] : [-2, 0, 0], // Move to center when open, otherwise to the left
+    scale: isBookOpen ? [1.3, 1.3, 1.3] : [1, 1, 1], // Enlarge when open
+    config: { tension: 200, friction: 20 },
+  });
+
+  // Function to handle events when user clicks on book
+  const handleBookClick = (page, setPage) => {
+    console.log("CLICK");
+
+    if (!isBookOpen) {
+      setIsBookOpen(true);
+      setBookOpen(true); // Hide avatar and title
+      //setPage(0);
+      console.log("isBookOpen:", isBookOpen);
+      console.log("page:", page);
+      return;
+    }
+    if (page < pages.length) {
+      setPage(page + 1); // Turn to next page
+    } else {
+      setPage(0); // Reset to cover if at last page
+      setIsBookOpen(false);
+      setBookOpen(false); // Show avatar and title again
+    }
+  };
+
+  // Function to handle events when user clicks outside of book
+  const handleBackgroundClick = (e) => {
+    e.stopPropagation(); // necessary since group w handleBookClick is a child of group w handleBackgroundClick, but click on flipbook should NOT propagate to parent
+    console.log("background click");
+    console.log("isBookOpen:", isBookOpen);
+    console.log("page:", page);
+    const clicked = e.object?.name;
+    if (clicked === "flipbook") return;
+
+    if (isBookOpen) {
+      setIsBookOpen(false);
+      setBookOpen(false);
+    }
+  };
 
   return (
-    <group
-      {...props}
-      rotation-y={-Math.PI / 2}
-      onClick={() => handlePageTurn(page, setPage)} // Explicitly pass page & setPage
-    >
-      {[...pages].map((pageData, page_num) => (
-        <Page
-          key={page_num}
-          page={page}
-          number={page_num}
-          opened={page > page_num}
-          bookClosed={page === 0 || page === pages.length}
-          {...pageData}
+    <group {...props}>
+      {/* Background click catcher (ghost plane) */}
+      <mesh
+        ref={backgroundRef}
+        onPointerDown={handleBackgroundClick}
+        castShadow={false}
+        receiveShadow={false}
+        position={[0, 0, -1]} // make sure it's behind the book
+        raycast={(...args) => {
+          // Make sure mesh exists first
+          if (backgroundRef.current) {
+            THREE.Mesh.prototype.raycast.call(backgroundRef.current, ...args);
+          }
+        }}
+      >
+        <planeGeometry args={[100, 100]} />
+        <meshBasicMaterial
+          visible={false}
+          transparent={true}
+          opacity={0}
+          depthWrite={false}
         />
-      ))}
+      </mesh>
+      <a.group
+        name="flipbook"
+        position={position}
+        scale={scale}
+        rotation-y={-Math.PI / 2}
+        onPointerDown={(e) => {
+          e.stopPropagation(); // avoid propagation !!
+          handleBookClick(page, setPage);
+        }}
+        onPointerEnter={() => setHovered(true)}
+        onPointerLeave={() => setHovered(false)}
+      >
+        {[...pages].map((pageData, page_num) => (
+          <Page
+            key={page_num}
+            page={page}
+            number={page_num}
+            opened={page > page_num}
+            bookClosed={page === 0 || page === pages.length}
+            {...pageData}
+          />
+        ))}
+      </a.group>
     </group>
   );
 };

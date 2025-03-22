@@ -139,7 +139,7 @@ export const Interface = () => {
           </motion.div>
         </section>
         {/* EXPERIENCE */}
-        <section className="section section--middle">EXPERIENCE</section>
+        <section className="section section--left">EXPERIENCE</section>
         {/* PROJECTS */}
         <section className="section section--left">
           <motion.div
