@@ -11,6 +11,7 @@ import {
   Color,
   MathUtils,
   MeshStandardMaterial,
+  MeshBasicMaterial,
 } from "three";
 import * as THREE from "three";
 import { pageAtom, pages } from "./FlipBookUI";
@@ -136,14 +137,21 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
     const materials = [
       ...pageMaterials,
       new MeshStandardMaterial({
-        color: whiteColor,
+        emissive: new THREE.Color("white"),
+        emissiveIntensity: 0.1,
         map: picture_1, // front image
-        roughness: 0.1, // all other pages get 0.1 roughness (glossy paper), matte would be 1
+        roughness: 0.3, // all other pages get 0.1 roughness (glossy paper), matte would be 1
+        metalness: 0.075,
+        toneMapped: false,
       }),
       new MeshStandardMaterial({
+        emissive: new THREE.Color("white"),
+        emissiveIntensity: 0.1,
         color: whiteColor,
         map: picture_2, // back image
-        roughness: 0.1,
+        roughness: 0.3,
+        metalness: 0.075,
+        toneMapped: false,
       }),
     ];
     const mesh = new SkinnedMesh(pageGeometry, materials);
@@ -225,7 +233,7 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
 
   // Open/Close Animation Constants
   const { position, scale } = useSpring({
-    position: isBookOpen ? [0, 0, 0] : [-2, 0, 0], // Move to center when open, otherwise to the left
+    position: isBookOpen ? [0, 0, 0] : [-1.8, 0, 0], // Move to center when open, otherwise to the left
     scale: isBookOpen ? [1.3, 1.3, 1.3] : [1, 1, 1], // Enlarge when open
     config: { tension: 200, friction: 20 },
   });
@@ -259,11 +267,9 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
     console.log("page:", page);
     const clicked = e.object?.name;
     if (clicked === "flipbook") return;
-
-    if (isBookOpen) {
-      setIsBookOpen(false);
-      setBookOpen(false);
-    }
+    setPage(0);
+    setIsBookOpen(false);
+    setBookOpen(false);
   };
 
   return (
