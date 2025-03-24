@@ -134,7 +134,11 @@ export const Experience = () => {
     <>
       <Environment preset="sunset" />
       {/* Render avatar; Hide avatar when book opens */}
-      <Avatar hideAvatar={section === "experience" && bookOpen} />
+      <Avatar
+        hideAvatar={
+          section === "projects" || (section === "experience" && bookOpen)
+        }
+      />
       {/* Group containing different website sections; must match array defined in config.js */}
       <group ref={sceneContainer} animate={section}>
         {/* HOME */}
