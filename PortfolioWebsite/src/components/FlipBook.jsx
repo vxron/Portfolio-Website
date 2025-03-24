@@ -141,7 +141,7 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
         emissiveIntensity: 0.1,
         map: picture_1, // front image
         roughness: 0.3, // all other pages get 0.1 roughness (glossy paper), matte would be 1
-        metalness: 0.075,
+        metalness: 0.1,
         toneMapped: false,
       }),
       new MeshStandardMaterial({
@@ -150,7 +150,7 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
         color: whiteColor,
         map: picture_2, // back image
         roughness: 0.3,
-        metalness: 0.075,
+        metalness: 0.1,
         toneMapped: false,
       }),
     ];
