@@ -1,4 +1,5 @@
 export const config = {
+  title: "Veronica's Portfolio...",
   sections: ["home", "skills", "experience", "projects", "contact"],
   home: {
     title: "VERONICA",
@@ -6,34 +7,34 @@ export const config = {
   },
   skills: [
     {
-      name: "Python, C, C++",
-      details: "",
+      name: "Firmware & Test Development",
+      details: "Python, C, C++, TCL",
       icon: "icons/coding.png",
       level: 75,
     },
     {
-      name: "Circuit Development",
-      details: "LTSpice, PSpice, PCB Layout",
+      name: "Circuit Design",
+      details: "Spice Simulations, Schematic Design, PCB Layout",
       icon: "icons/circuit2.png",
       level: 85,
     },
     {
-      name: "Front-End Design",
+      name: "UX",
       details:
         "HTML, CSS, JavaScript, React, Blender, Adobe Illustrator, After Effects",
       icon: "icons/webdev.png",
       level: 60,
     },
     {
-      name: "Electrical & Systems Testing",
+      name: "Electrical & Computer Testing",
       details:
         "Oscilloscopes, DMM, Network Analyzers, Waveform Generators, Traffic Generators",
       icon: "icons/oscilloscope2.png",
       level: 80,
     },
     {
-      name: "Embedded Systems Design",
-      details: "Microcontrollers Interfacing, Assembly, Embedded C",
+      name: "Systems Integration",
+      details: "Microcontrollers, Peripherals Interfacing, Embedded C",
       icon: "icons/controller1.png",
       level: 90,
     },

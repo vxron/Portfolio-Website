@@ -9,7 +9,7 @@ import {
   Html,
 } from "@react-three/drei";
 import { Avatar } from "./Avatar";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { SectionTitle } from "./SectionTitle";
 import { useFrame } from "@react-three/fiber";
 import { config } from "../config";
@@ -29,6 +29,7 @@ import { motion, MotionConfig, LayoutGroup } from "motion/react";
 import { FlipBook } from "./FlipBook";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMobile } from "../hooks/useMobile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,6 +39,8 @@ const SECTION_DISTANCE = 15;
 const FADE_SPEED = 0.05;
 
 export const Experience = () => {
+  // useMobile hook for responsiveness
+  const { isMobile } = useMobile();
   // State machine for revealing/hiding sections (starting at home page)
   const [section, setSection] = useState(config.sections[0]);
   // State machine for flipbook
@@ -130,6 +133,28 @@ export const Experience = () => {
     }
   });
 
+  // Event listener for top bar menu
+  useEffect(() => {
+    // menu must match config.js sections
+    const handleHashChange = () => {
+      const sectionIndex = config.sections.indexOf(
+        window.location.hash.replace("#", "")
+      );
+      if (sectionIndex >= 0) {
+        // scroll to section
+        scrollData.el.scrollTo(
+          0,
+          (sectionIndex / (config.sections.length - 1)) *
+            (scrollData.el.scrollHeight - scrollData.el.clientHeight)
+        );
+        // scrollData.el is the scrollable element created by ScrollControls
+      }
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashChange", handleHashChange);
+  }, []);
+
   return (
     <>
       <Environment preset="sunset" />
@@ -197,7 +222,11 @@ export const Experience = () => {
         </group>
 
         {/* SKILLS */}
-        <group position-z={SECTION_DISTANCE} name="skills">
+        <group
+          position-x={isMobile ? SECTION_DISTANCE : 0}
+          position-z={isMobile ? -4 : SECTION_DISTANCE}
+          name="skills"
+        >
           <group position-x={-2}>
             <SectionTitle position-x={0.4}>SKILLS</SectionTitle>
             <BookCase position-z={-2} />
@@ -217,7 +246,11 @@ export const Experience = () => {
         </group>
 
         {/* EXPERIENCE */}
-        <group position-z={SECTION_DISTANCE * 2} name="experience">
+        <group
+          position-x={isMobile ? 2 * SECTION_DISTANCE : 0}
+          position-z={isMobile ? -3 : 2 * SECTION_DISTANCE}
+          name="experience"
+        >
           {!bookOpen && (
             <SectionTitle position-x={0.4}>EXPERIENCE</SectionTitle>
           )}
@@ -241,7 +274,11 @@ export const Experience = () => {
         </group>
 
         {/* PROJECTS */}
-        <group position-z={SECTION_DISTANCE * 3} name="projects">
+        <group
+          position-x={isMobile ? 3 * SECTION_DISTANCE : 0}
+          position-z={isMobile ? -4 : 3 * SECTION_DISTANCE}
+          name="projects"
+        >
           <group position-x={1}>
             <SectionTitle
               position-x={-0.5}
@@ -276,7 +313,11 @@ export const Experience = () => {
         </group>
 
         {/* CONTACT */}
-        <group position-z={SECTION_DISTANCE * 4} name="contact">
+        <group
+          position-x={isMobile ? 4 * SECTION_DISTANCE : 0}
+          position-z={isMobile ? -5 : 4 * SECTION_DISTANCE}
+          name="contact"
+        >
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
         </group>
       </group>

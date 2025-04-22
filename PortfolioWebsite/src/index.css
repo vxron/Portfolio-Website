@@ -3,6 +3,7 @@
 
 :root {
   --watermelon-pink: #e37383;
+  --dark-watermelon-pink: #dd5569;
   --hot-pink: #ff69b4;
   --light-pink: #f8c8dc;
   --vlight-pink: #f8e2eb;
@@ -326,4 +327,66 @@ a {
 .menu_button:hover {
   color: var(--watermelon-pink);
   cursor: pointer;
+}
+
+/* LOADING SCREEN */
+
+/* LOADING SCREEN */
+
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 4rem;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background-color: #dbb8d9;
+  background-image: linear-gradient(0deg, #d3b9cd 0%, #faf5f9 74%);
+  opacity: 1;
+  transition: opacity 1s ease-in-out;
+}
+
+.loading-screen--hidden {
+  animation: fade-out 0.5s ease-in-out forwards 1s;
+  pointer-events: none;
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.loading-screen__title {
+  font-size: 3.8rem;
+  font-weight: 700;
+  color: var(--dark-watermelon-pink);
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000;
+  font-style: italic;
+}
+
+.progress__container {
+  width: 100%;
+  height: 1rem;
+  background-color: rgba(113, 102, 110, 0.42);
+  position: relative;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.progress__bar {
+  width: 0;
+  height: 100%;
+  background-color: var(--dark-watermelon-pink);
+  transition: width 0.5s ease-in-out;
 }
