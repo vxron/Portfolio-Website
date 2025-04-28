@@ -6,9 +6,13 @@ Palm tree by jeremy [CC-BY] (https://creativecommons.org/licenses/by/3.0/) via P
 
 import { useGLTF } from "@react-three/drei";
 import React from "react";
+import { useMobile } from "../hooks/useMobile";
 
 export function PalmTree(props) {
-  const { nodes, materials } = useGLTF("/models/Palm tree.glb");
+  const { isMobile } = useMobile();
+  const { nodes, materials } = isMobile
+    ? useGLTF("/models/Palm tree.glb")
+    : useGLTF("/models/Palm tree Pink.glb");
   return (
     <group {...props} dispose={null}>
       <mesh

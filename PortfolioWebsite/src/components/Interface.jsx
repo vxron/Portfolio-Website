@@ -9,6 +9,7 @@ import { atom, useAtom } from "jotai";
 import { useSection } from "../States";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMobile } from "../hooks/useMobile";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,6 +17,7 @@ gsap.registerPlugin(ScrollTrigger);
 export const projectAtom = atom(config.projects[0]);
 
 export const Interface = () => {
+  const { isMobile } = useMobile();
   // State to know if user has already scrolled (initially false)
   const [hasScrolled, setHasScrolled] = useState(false);
   const scrollData = useScroll();
@@ -98,13 +100,14 @@ export const Interface = () => {
           </div>
         </section>
         {/* SKILLS */}
-        <section className="section section--right">
+        <section className="section section--right mobile--section--left mobile--section--bottom">
           {/* Create smooth "fade in" effect using "visible" tag */}
           <motion.div
             className="skills_div"
             whileInView={"visible"}
             variants={{ visible: { opacity: 1 } }}
             initial={{ opacity: 0 }}
+            viewport={{ margin: isMobile ? "-70% 0px 0px 0px" : undefined }}
           >
             {/* Map to render 1 skill per object, wrapped in motion divs so we can animate them individually */}
             {/* .map method creates a new array by applying a function to each element of an existing array */}
@@ -115,7 +118,7 @@ export const Interface = () => {
                 className="skill"
                 initial={{ opacity: 0 }}
                 variants={{ visible: { opacity: 1 } }}
-                transition={{ duration: 2, delay: index * 0.6 }}
+                transition={{ duration: 2, delay: isMobile ? 0 : index * 0.6 }}
               >
                 <div className="skill_label">
                   <img
@@ -139,14 +142,15 @@ export const Interface = () => {
           </motion.div>
         </section>
         {/* EXPERIENCE */}
-        <section className="section section--left">EXPERIENCE</section>
+        <section className="section section--left mobile--section--bottom"></section>
         {/* PROJECTS */}
-        <section className="section section--left">
+        <section className="section section--left mobile--section--bottom">
           <motion.div
             className="projects_div"
             whileInView={"visible"}
             initial={{ opacity: 0 }}
             variants={{ visible: { opacity: 1 } }}
+            viewport={{ margin: isMobile ? "-70% 0px 0px 0px" : undefined }}
           >
             {/* Render div for each project using map */}
             {config.projects.map((project, index) => (
@@ -156,7 +160,7 @@ export const Interface = () => {
                 initial={{ opacity: 0 }}
                 onMouseEnter={() => setProject(project)}
                 variants={{ visible: { opacity: 1 } }}
-                transition={{ duration: 1, delay: index * 0.62 }}
+                transition={{ duration: 1, delay: isMobile ? 0 : index * 0.62 }}
               >
                 <a href={project.link} target="_blank">
                   <img
@@ -173,7 +177,7 @@ export const Interface = () => {
           </motion.div>
         </section>
         {/* CONTACT */}
-        <section className="section section--left">
+        <section className="section section--left mobile--section--bottom">
           <motion.div
             className="contact"
             whileInView={"visible"}
