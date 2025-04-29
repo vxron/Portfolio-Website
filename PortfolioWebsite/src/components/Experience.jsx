@@ -33,8 +33,6 @@ import { useMobile } from "../hooks/useMobile";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Distance along z-axis between sections (as char walks fwd/backward)
-const SECTION_DISTANCE = 15;
 // Transition speed between sections (higher = slower fade)
 const FADE_SPEED = 0.05;
 
@@ -48,6 +46,9 @@ export const Experience = () => {
 
   const sceneContainer = useRef();
   const scrollData = useScroll();
+
+  // Distance along z-axis between sections (as char walks fwd/backward)
+  const SECTION_DISTANCE = isMobile ? 10 : 20;
 
   //const setGlobalSection = useSectionState((state) => state.setSection);
 
@@ -163,6 +164,8 @@ export const Experience = () => {
         hideAvatar={
           section === "projects" || (section === "experience" && bookOpen)
         }
+        position-z={isMobile ? -1.8 : 0}
+        scale={isMobile ? 1.1 : 1}
       />
       {/* Group containing different website sections; must match array defined in config.js */}
       <group ref={sceneContainer} animate={section}>
@@ -170,8 +173,8 @@ export const Experience = () => {
         <group name="home">
           <Star
             position-x={-0.009}
-            position-z={0}
-            position-y={1.97}
+            position-z={isMobile ? -2 : 0}
+            position-y={isMobile ? 2.15 : 1.97}
             scale={0.3}
           />
           <Float floatIntensity={2} speed={2}>
@@ -184,9 +187,15 @@ export const Experience = () => {
             />
           </Float>
           <PalmTree
-            scale={0.018}
-            rotation-y={THREE.MathUtils.degToRad(140)}
-            position={[4, 0, -5]}
+            scale={0.019}
+            rotation-y={
+              isMobile
+                ? THREE.MathUtils.degToRad(195)
+                : THREE.MathUtils.degToRad(140)
+            }
+            position={
+              isMobile ? [1, -0.1, -5] : [4.8 * scaleFactor, -0.5, -4.1]
+            }
           />
           <Float
             floatIntensity={0.4}
@@ -281,9 +290,9 @@ export const Experience = () => {
         >
           <group position-x={1}>
             <SectionTitle
-              position-x={-0.5}
+              position-x={isMobile ? -2.4 : -0.5}
               position-z={0}
-              rotation-y={-Math.PI / 6}
+              rotation-y={isMobile ? Math.PI / 5 : -Math.PI / 6}
             >
               PROJECTS
             </SectionTitle>
@@ -314,8 +323,9 @@ export const Experience = () => {
 
         {/* CONTACT */}
         <group
-          position-x={isMobile ? 4 * SECTION_DISTANCE : 0}
-          position-z={isMobile ? -5 : 4 * SECTION_DISTANCE}
+          position-x={isMobile ? 3.75 * SECTION_DISTANCE : 0}
+          position-z={isMobile ? -4 : 4 * SECTION_DISTANCE}
+          rotation-y={Math.PI / 5}
           name="contact"
         >
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
