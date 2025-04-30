@@ -61,7 +61,6 @@ export function Avatar({ hideAvatar, ...props }) {
     const scrollDelta = scrollData.offset - lastScroll.current;
     let walkingDir = 0;
     // If we have scrolled fwd or backward, set animation state to walking
-    console.log(useMobile);
     if (Math.abs(scrollDelta) > 0.0001) {
       setAnimation("Walking");
       if (scrollDelta > 0) {

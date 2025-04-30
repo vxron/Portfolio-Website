@@ -42,10 +42,17 @@ const Lights = () => {
 */
 
 function App() {
+  // dimensions of 3d scene
+  const width = 8.882429021961798;
+  const height = 1.1618082784116268 * 4;
+  const depth = 4.5;
+  const aspect = width / height;
+  // equation for responsive fov of camera to accomodate diff screen sizes
+  const fov = 2 * Math.atan(width / aspect / (2 * depth)) * (180 / Math.PI);
   return (
     <>
       <LoadingScreen></LoadingScreen>
-      <Canvas camera={{ position: [0, 0.5, 5], fov: 42 }}>
+      <Canvas camera={{ position: [0, 0.5, 5], fov: fov }}>
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 10, 50]} />
         {/* Global ambient light for base brightness */}
@@ -73,7 +80,7 @@ function App() {
           maxSpeed={0.2}
         >
           <MotionConfig transition={{ duration: 0.6 }}>
-            <group position-y={-1}>
+            <group position-y={-1} position-x={0.2}>
               <Suspense>
                 <Experience />
               </Suspense>

@@ -30,6 +30,7 @@ import { FlipBook } from "./FlipBook";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
+import { Box3, Vector3 } from "three";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,6 +50,8 @@ export const Experience = () => {
 
   // Distance along z-axis between sections (as char walks fwd/backward)
   const SECTION_DISTANCE = isMobile ? 10 : 20;
+
+  const titleRef = useRef();
 
   //const setGlobalSection = useSectionState((state) => state.setSection);
 
@@ -165,13 +168,23 @@ export const Experience = () => {
     return () => window.removeEventListener("hashChange", handleHashChange);
   }, []);
 
+  // hook for getting size (dimensions) of 3D element on screen (for debugging)
+  useEffect(() => {
+    if (titleRef.current) {
+      const box = new THREE.Box3().setFromObject(titleRef.current);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+      console.log("Measured dimensions:", size);
+    }
+  }, []);
+
   return (
     <>
       <Environment preset="sunset" />
       {/* Render avatar; Hide avatar when book opens */}
       <Avatar
         hideAvatar={
-          (section === "projects" && !useMobile) ||
+          (section === "projects" && !isMobile) ||
           (section === "experience" && bookOpen)
         }
         position-z={isMobile ? -1.8 : 0}
@@ -197,7 +210,7 @@ export const Experience = () => {
             />
           </Float>
           <PalmTree
-            scale={0.019}
+            scale={0.024}
             rotation-y={
               isMobile
                 ? THREE.MathUtils.degToRad(195)
@@ -231,12 +244,12 @@ export const Experience = () => {
 
             <Center disableY disableZ>
               <SectionTitle
+                ref={titleRef}
                 size={1.1}
-                position-x={6}
                 position-z={-3}
                 bevelEnabled
                 bevelThickness={0.3}
-                rotation-y={isMobile ? Math.PI / 20 : Math.PI / 10}
+                rotation-y={isMobile ? Math.PI / 20 : Math.PI / 13}
               >
                 {config.home.subtitle}
               </SectionTitle>
