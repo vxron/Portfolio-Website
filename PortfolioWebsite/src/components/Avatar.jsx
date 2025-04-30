@@ -9,8 +9,10 @@ import { useGLTF, useFBX, useAnimations, useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { SkeletonUtils } from "three-stdlib";
 import * as THREE from "three";
+import { useMobile } from "../hooks/useMobile";
 
 export function Avatar({ hideAvatar, ...props }) {
+  const { isMobile } = useMobile();
   const { nodes, materials } = useGLTF("/models/67a7f88926adc938cec34756.glb");
   const { animations: idleAnimation } = useFBX("/animations/Idle.fbx");
   const { animations: walkingAnimation } = useFBX("/animations/Walking.fbx");
@@ -59,13 +61,15 @@ export function Avatar({ hideAvatar, ...props }) {
     const scrollDelta = scrollData.offset - lastScroll.current;
     let walkingDir = 0;
     // If we have scrolled fwd or backward, set animation state to walking
+    console.log(useMobile);
     if (Math.abs(scrollDelta) > 0.0001) {
       setAnimation("Walking");
       if (scrollDelta > 0) {
         // Moving forward
+        walkingDir = isMobile ? Math.PI / 2 : 0;
       } else {
         // Moving backward
-        walkingDir = Math.PI;
+        walkingDir = isMobile ? -Math.PI / 2 : Math.PI;
       }
     } else {
       setAnimation("Idle");

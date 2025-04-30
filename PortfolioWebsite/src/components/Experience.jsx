@@ -38,7 +38,7 @@ const FADE_SPEED = 0.05;
 
 export const Experience = () => {
   // useMobile hook for responsiveness
-  const { isMobile } = useMobile();
+  const { isMobile, scaleFactor } = useMobile();
   // State machine for revealing/hiding sections (starting at home page)
   const [section, setSection] = useState(config.sections[0]);
   // State machine for flipbook
@@ -66,10 +66,19 @@ export const Experience = () => {
 
   // Animate sceneContainer group to move through different sections
   useFrame(() => {
-    sceneContainer.current.position.z =
-      -scrollData.offset * SECTION_DISTANCE * (scrollData.pages - 1);
-    // This moves groups in -z dir (towards camera) to sim camera moving backward (in +z dir)
-
+    // separate logic for mobile experience for horizontal scrolling
+    if (isMobile) {
+      sceneContainer.current.position.x =
+        -scrollData.offset * SECTION_DISTANCE * (scrollData.pages - 1);
+      // since we can change between two modes at runtime, need to reset
+      sceneContainer.current.position.z = 0;
+    } else {
+      // vertical scrolling on desktop
+      sceneContainer.current.position.z =
+        -scrollData.offset * SECTION_DISTANCE * (scrollData.pages - 1);
+      sceneContainer.current.position.x = 0;
+      // This moves groups in -z dir (towards camera) to sim camera moving backward (in +z dir)
+    }
     // Get current section number (current state), and acquire title from config
     setSection(
       config.sections[Math.round(scrollData.offset * (scrollData.pages - 1))]
@@ -162,7 +171,8 @@ export const Experience = () => {
       {/* Render avatar; Hide avatar when book opens */}
       <Avatar
         hideAvatar={
-          section === "projects" || (section === "experience" && bookOpen)
+          (section === "projects" && !useMobile) ||
+          (section === "experience" && bookOpen)
         }
         position-z={isMobile ? -1.8 : 0}
         scale={isMobile ? 1.1 : 1}
@@ -177,11 +187,11 @@ export const Experience = () => {
             position-y={isMobile ? 2.15 : 1.97}
             scale={0.3}
           />
-          <Float floatIntensity={2} speed={2}>
+          <Float floatIntensity={isMobile ? 1 : 2} speed={2}>
             <MacBookPro
-              position-x={-1}
-              position-y={0.5}
-              position-z={0}
+              position-x={isMobile ? -0.9 : -1}
+              position-y={isMobile ? 0.7 : 0.1}
+              position-z={isMobile ? -2 : 0}
               scale={0.3}
               rotation-y={Math.PI / 4}
             />
@@ -197,37 +207,41 @@ export const Experience = () => {
               isMobile ? [1, -0.1, -5] : [4.8 * scaleFactor, -0.5, -4.1]
             }
           />
-          <Float
-            floatIntensity={0.4}
-            rotationIntensity={0.2}
-            speed={2}
-            floatingRange={[-0.05, 0.05]}
-          >
+          <group scale={isMobile ? 0.3 : 1} position-y={isMobile ? -0.4 : 0}>
+            <Float
+              floatIntensity={0.4}
+              rotationIntensity={0.2}
+              speed={2}
+              floatingRange={[-0.05, 0.05]}
+            >
+              <Center disableY disableZ>
+                <SectionTitle
+                  size={0.8}
+                  position-x={1.1}
+                  position-y={1.4}
+                  position-z={-3}
+                  bevelEnabled
+                  bevelThickness={0.3}
+                  rotation-x={isMobile ? -Math.PI / 20 : 0}
+                >
+                  {config.home.title}
+                </SectionTitle>
+              </Center>
+            </Float>
+
             <Center disableY disableZ>
               <SectionTitle
-                size={0.8}
-                position-x={2}
-                position-y={1.6}
+                size={1.1}
+                position-x={6}
                 position-z={-3}
                 bevelEnabled
                 bevelThickness={0.3}
+                rotation-y={isMobile ? Math.PI / 20 : Math.PI / 10}
               >
-                {config.home.title}
+                {config.home.subtitle}
               </SectionTitle>
             </Center>
-          </Float>
-          <Center disableY disableZ>
-            <SectionTitle
-              size={1.2}
-              position-x={5}
-              position-z={-3}
-              bevelEnabled
-              bevelThickness={0.3}
-              rotation-y={Math.PI / 10}
-            >
-              {config.home.subtitle}
-            </SectionTitle>
-          </Center>
+          </group>
         </group>
 
         {/* SKILLS */}
@@ -236,8 +250,13 @@ export const Experience = () => {
           position-z={isMobile ? -4 : SECTION_DISTANCE}
           name="skills"
         >
-          <group position-x={-2}>
-            <SectionTitle position-x={0.4}>SKILLS</SectionTitle>
+          <group position-x={isMobile ? 0 : -2}>
+            <SectionTitle
+              position-x={0.4}
+              rotation-y={isMobile ? Math.PI / 6 : -Math.PI / 6}
+            >
+              SKILLS
+            </SectionTitle>
             <BookCase position-z={-2} />
             <CouchSmall
               scale={0.4}
@@ -261,7 +280,14 @@ export const Experience = () => {
           name="experience"
         >
           {!bookOpen && (
-            <SectionTitle position-x={0.4}>EXPERIENCE</SectionTitle>
+            <SectionTitle
+              position-x={isMobile ? -1 : 0.4}
+              position-z={isMobile ? 2.5 : 0}
+              scale={isMobile ? 0.75 : 1}
+              rotation-y={isMobile ? -Math.PI / 10 : 0}
+            >
+              EXPERIENCE
+            </SectionTitle>
           )}
           {/* Hide title when book opens */}
           <Float
@@ -288,7 +314,7 @@ export const Experience = () => {
           position-z={isMobile ? -4 : 3 * SECTION_DISTANCE}
           name="projects"
         >
-          <group position-x={1}>
+          <group position-x={isMobile ? 0.25 : 1}>
             <SectionTitle
               position-x={isMobile ? -2.4 : -0.5}
               position-z={0}

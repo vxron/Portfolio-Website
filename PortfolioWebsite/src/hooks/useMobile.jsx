@@ -8,16 +8,16 @@ useMobile hook:
 
 import { useEffect, useState } from "react";
 
-const REFERENCE_WIDTH = 1920;
-const MOBILE_THRESHOLD = 990; // switch to mobile view
+const REFERENCE_WIDTH = 1920; // Typical Screen Size
+const MOBILE_THRESHOLD = 990; // Switch to mobile view (or portrait tablets)
 
 export const useMobile = () => {
   const [scaleFactor, setScaleFactor] = useState(
     window.innerWidth / REFERENCE_WIDTH
-  );
+  ); // Size of the screen divided by our reference (e.g., 1920 --> scale factor of 1)
   const [isMobile, setIsMobile] = useState(
     window.innerWidth <= MOBILE_THRESHOLD
-  );
+  ); // Cause re-render when variable changes, thus need useState
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,8 +28,8 @@ export const useMobile = () => {
         setIsMobile(false);
       }
     };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize); // call handleResize function
+    return () => window.removeEventListener("resize", handleResize); // remove event listenener on cleanup
   }, []);
 
   return {
