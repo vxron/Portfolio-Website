@@ -14,7 +14,7 @@ import { useMobile } from "../hooks/useMobile";
 export function Avatar({ hideAvatar, ...props }) {
   const { isMobile } = useMobile();
   const { nodes, materials } = useGLTF("/models/67a7f88926adc938cec34756.glb");
-  const { animations: idleAnimation } = useFBX("/animations/Idle.fbx");
+  const { animations: idleAnimation } = useFBX("/animations/Idle_V2.fbx");
   const { animations: walkingAnimation } = useFBX("/animations/Walking.fbx");
 
   const group = useRef();
@@ -31,8 +31,17 @@ export function Avatar({ hideAvatar, ...props }) {
   const [animation, setAnimation] = useState("Idle"); // Default Idle state
   // Play animation based on state
   useEffect(() => {
-    actions[animation].reset().fadeIn(0.6).play();
-    return () => actions[animation].fadeOut(0.6);
+    if (!actions.Idle || !actions.Walking) return;
+
+    const current = actions[animation];
+    const previous = actions[animation === "Idle" ? "Walking" : "Idle"];
+
+    current.reset().play();
+    current.crossFadeFrom(previous, 0.5, true);
+
+    return () => {
+      previous?.fadeOut(0.5);
+    };
   }, [animation, actions]);
 
   const scrollData = useScroll();
