@@ -1,22 +1,15 @@
 /* eslint-disable react/no-unknown-property */
-import {
-  OrbitControls,
-  useHelper,
-  ScrollControls,
-  Scroll,
-} from "@react-three/drei";
+import { ScrollControls, Scroll } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
 import { useState, Suspense } from "react";
 import * as THREE from "three";
-import { button, useControls } from "leva";
 import { config } from "./config";
 import { Interface } from "./components/Interface";
 import { motion, MotionConfig } from "motion/react";
-//import { UI } from "./components/FlipBookUI";
-import { MeshNormalMaterial } from "three";
 import { Menu } from "./components/Menu";
 import { LoadingScreen } from "./components/LoadingScreen";
+import { BgMusic } from "./components/Music";
 
 /*
 const Lights = () => {
@@ -52,6 +45,8 @@ function App() {
   return (
     <>
       <LoadingScreen></LoadingScreen>
+      <BgMusic></BgMusic>
+      <div id="my-modal"></div>
       <Canvas camera={{ position: [0, 0.5, 5], fov: fov }}>
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 10, 50]} />
