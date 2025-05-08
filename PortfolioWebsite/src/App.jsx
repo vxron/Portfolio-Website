@@ -35,18 +35,19 @@ const Lights = () => {
 */
 
 function App() {
+  // keep track of when page has loaded
+  const [ready, setReady] = useState(false);
   // dimensions of 3d scene
   const width = 8.882429021961798;
-  const height = 1.1618082784116268 * 4;
+  const height = 1.1618082784116268 * 3.5;
   const depth = 4.5;
   const aspect = width / height;
   // equation for responsive fov of camera to accomodate diff screen sizes
   const fov = 2 * Math.atan(width / aspect / (2 * depth)) * (180 / Math.PI);
   return (
     <>
-      <LoadingScreen></LoadingScreen>
-      <BgMusic></BgMusic>
-      <div id="my-modal"></div>
+      <LoadingScreen onFinish={() => setReady(true)}></LoadingScreen>
+      {ready && <BgMusic />}
       <Canvas camera={{ position: [0, 0.5, 5], fov: fov }}>
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 10, 50]} />

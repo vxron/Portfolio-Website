@@ -1,8 +1,16 @@
 import { useProgress } from "@react-three/drei";
 import { config } from "../config";
+import { useEffect } from "react";
 
-export const LoadingScreen = () => {
+export const LoadingScreen = ({ onFinish }) => {
   const { progress, active } = useProgress();
+
+  useEffect(() => {
+    if (!active) {
+      // All assets done loading
+      onFinish?.();
+    }
+  }, [active, onFinish]);
 
   return (
     <div className={`loading-screen ${active ? "" : "loading-screen--hidden"}`}>

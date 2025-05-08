@@ -48,6 +48,7 @@ export const BgMusic = () => {
   }, [isPlaying, audioRef]);
 
   useEffect(() => {
+    console.log("👀 Modal shown?", showModal); //debugging
     //setShowModal(true); // Force modal for testing
     const consent = localStorage.getItem("musicConsent");
     const consentTime = localStorage.getItem("consentTime");
@@ -55,12 +56,19 @@ export const BgMusic = () => {
     if (
       consent &&
       consentTime &&
-      new Date(consentTime).getTime() + 3 * 24 * 60 * 60 * 1000 >
-        new Date().getTime() // 3 days
+      new Date(consentTime).getTime() + 3 * 24 * 60 * 60 * 1000 > Date.now()
     ) {
       setIsPlaying(consent === "true");
 
       if (consent === "true") {
+        // Browser allows audio only after interaction — listen for first one
+        const resumePlayback = () => {
+          audioRef.current?.play();
+          ["click", "keydown", "touchstart"].forEach((event) =>
+            document.removeEventListener(event, resumePlayback)
+          );
+        };
+
         ["click", "keydown", "touchstart"].forEach((event) =>
           document.addEventListener(event, handleFirstUserInteraction)
         );

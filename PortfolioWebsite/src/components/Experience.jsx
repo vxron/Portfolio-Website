@@ -189,6 +189,7 @@ export const Experience = () => {
         }
         position-z={isMobile ? -1.8 : 0}
         scale={isMobile ? 1.1 : 1}
+        position-x={-0.05}
       />
       {/* Group containing different website sections; must match array defined in config.js */}
       <group ref={sceneContainer} animate={section}>
