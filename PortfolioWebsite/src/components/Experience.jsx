@@ -3,6 +3,7 @@ import {
   Center,
   Environment,
   useScroll,
+  ContactShadows,
   Float,
   MeshDistortMaterial,
   RoundedBox,
@@ -304,22 +305,18 @@ export const Experience = () => {
             </SectionTitle>
           )}
           {/* Hide title when book opens */}
-          <Float
-            rotation-x={-Math.PI / 7}
-            floatIntensity={0.5}
-            speed={2}
-            rotationIntensity={1}
-          >
-            <FlipBook
-              setBookOpen={setBookOpen}
-              position-y={1}
-              position-z={0.5}
-            />
-          </Float>
-          <mesh position-y={-1.5} rotation-x={-Math.PI / 2} receiveShadow>
-            <planeGeometry args={[100, 100]}></planeGeometry>
-            <shadowMaterial transparent opacity={0.2} />
-          </mesh>
+          <group position={[0, 1, 0.5]}>
+            {" "}
+            {/* match to FlipBook's y and z */}
+            <Float
+              rotation-x={-Math.PI / 7}
+              floatIntensity={0.5}
+              speed={2}
+              rotationIntensity={1}
+            >
+              <FlipBook setBookOpen={setBookOpen} />
+            </Float>
+          </group>
         </group>
 
         {/* PROJECTS */}
