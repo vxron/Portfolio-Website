@@ -306,7 +306,6 @@ export const Experience = () => {
           )}
           {/* Hide title when book opens */}
           <group position={[0, 1, 0.5]}>
-            {" "}
             {/* match to FlipBook's y and z */}
             <Float
               rotation-x={-Math.PI / 7}

@@ -264,7 +264,7 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
   });
 
   // Function to handle events when user clicks on book
-  const handleBookClick = (page, setPage) => {
+  const handleBookClick = (page, setPage, direction = "next") => {
     console.log("CLICK");
 
     if (!isBookOpen) {
@@ -275,12 +275,25 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
       console.log("page:", page);
       return;
     }
-    if (page < pages.length) {
-      setPage(page + 1); // Turn to next page
-    } else {
-      setPage(0); // Reset to cover if at last page
-      setIsBookOpen(false);
-      setBookOpen(false); // Show avatar and title again
+
+    if (direction === "next") {
+      if (page < pages.length) {
+        setPage(page + 1);
+      } else {
+        setPage(0); // Reset to cover if at last page
+        setIsBookOpen(false); // Show avatar and title again
+        setBookOpen(false);
+      }
+    } else if (direction === "prev") {
+      if (page > 0) {
+        if (page < pages.length) {
+          setPage(page - 1);
+        } else {
+          setPage(0); // Reset to cover if at last page
+          setIsBookOpen(false); // Show avatar and title again
+          setBookOpen(false);
+        }
+      }
     }
   };
 
@@ -328,7 +341,13 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
         rotation-y={-Math.PI / 2}
         onPointerDown={(e) => {
           e.stopPropagation(); // avoid propagation !!
-          handleBookClick(page, setPage);
+          const localX = e.point.x;
+          const isRightSide = localX > PAGE_WIDTH / 2;
+          if (isRightSide) {
+            handleBookClick(page, setPage, "next");
+          } else {
+            handleBookClick(page, setPage, "prev");
+          }
         }}
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
