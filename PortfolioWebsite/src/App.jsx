@@ -48,18 +48,19 @@ function App() {
     <>
       <LoadingScreen onFinish={() => setReady(true)}></LoadingScreen>
       {ready && <BgMusic />}
-      <Canvas camera={{ position: [0, 0.5, 5], fov: fov }}>
+      <Canvas shadows camera={{ position: [0, 0.5, 5], fov: fov }}>
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 10, 50]} />
         {/* Global ambient light for base brightness */}
-        <ambientLight intensity={0.4} />
+        <ambientLight intensity={0.3} />
         {/* Strong directional light for sunlight-like shadows */}
         <directionalLight
-          position={[7, 4, 5]}
-          intensity={0.1}
+          position={[2, 4, 2]}
+          intensity={0.3}
           castShadow
-          shadow-mapSize-width={1200}
-          shadow-mapSize-height={1200}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
+          shadow-bias={-0.0001}
         />
         {/* Focused spotlight for extra depth on book/scene */}
         {/*<spotLight
@@ -77,7 +78,7 @@ function App() {
         >
           <MotionConfig transition={{ duration: 0.6 }}>
             <group position-y={-1} position-x={0.2}>
-              <Suspense>
+              <Suspense fallback={null}>
                 <Experience />
               </Suspense>
             </group>

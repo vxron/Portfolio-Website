@@ -20,7 +20,7 @@ import { Skeleton } from "three";
 import { useHelper } from "@react-three/drei";
 import { SkeletonHelper } from "three";
 import { degToRad } from "three/src/math/MathUtils.js";
-import { useTexture } from "@react-three/drei";
+import { useTexture, ContactShadows } from "@react-three/drei";
 import { useCursor } from "@react-three/drei";
 import { useSpring, a } from "@react-spring/three"; // To smoothly resize flipbook
 
@@ -98,8 +98,7 @@ const pageMaterials = [
 ];
 
 // preload front and back of book, which is same texture for now
-useTexture.preload(`/exp_images/pink-bg.jpg`);
-useTexture.preload(`/exp_images/TESLA.png`);
+useTexture.preload(`/exp_images/title-pg.png`);
 
 // Custom Page Component
 // Book is achieved using BoxGeometry 3D material
@@ -134,26 +133,52 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
     const skeleton = new Skeleton(bones);
 
     // pageMaterials, plus 2 specific materials for front/back
+
+    const isFrontCover = number === 0;
+    const isBackCover = number === pages.length - 1;
+
+    const glossyMaterial = new MeshStandardMaterial({
+      map: picture_1,
+      roughness: 0.1, // More glossy
+      metalness: 0.15,
+      emissive: new THREE.Color("white"),
+      emissiveIntensity: 0.15,
+      toneMapped: false,
+    });
+
+    const glossyBackMaterial = new MeshStandardMaterial({
+      map: picture_2,
+      roughness: 0.1, // More glossy
+      metalness: 0.1,
+      emissive: new THREE.Color("white"),
+      emissiveIntensity: 0.1,
+      toneMapped: false,
+    });
+
+    const defaultFrontMaterial = new MeshStandardMaterial({
+      map: picture_1,
+      roughness: 0.8,
+      metalness: 0.3,
+      emissive: new THREE.Color("white"),
+      emissiveIntensity: 0.05,
+      toneMapped: false,
+    });
+
+    const defaultBackMaterial = new MeshStandardMaterial({
+      map: picture_2,
+      roughness: 1,
+      metalness: 0,
+      emissive: new THREE.Color("white"),
+      emissiveIntensity: 0.05,
+      toneMapped: false,
+    });
+
     const materials = [
       ...pageMaterials,
-      new MeshStandardMaterial({
-        emissive: new THREE.Color("white"),
-        emissiveIntensity: 0.1,
-        map: picture_1, // front image
-        roughness: 0.3, // all other pages get 0.1 roughness (glossy paper), matte would be 1
-        metalness: 0.075,
-        toneMapped: false,
-      }),
-      new MeshStandardMaterial({
-        emissive: new THREE.Color("white"),
-        emissiveIntensity: 0.1,
-        color: whiteColor,
-        map: picture_2, // back image
-        roughness: 0.3,
-        metalness: 0.075,
-        toneMapped: false,
-      }),
+      isFrontCover || isBackCover ? glossyMaterial : defaultFrontMaterial,
+      isFrontCover || isBackCover ? glossyBackMaterial : defaultBackMaterial,
     ];
+
     const mesh = new SkinnedMesh(pageGeometry, materials);
     mesh.receiveShadow = true;
     mesh.castShadow = true;
@@ -239,7 +264,7 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
   });
 
   // Function to handle events when user clicks on book
-  const handleBookClick = (page, setPage) => {
+  const handleBookClick = (page, setPage, direction = "next") => {
     console.log("CLICK");
 
     if (!isBookOpen) {
@@ -250,12 +275,25 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
       console.log("page:", page);
       return;
     }
-    if (page < pages.length) {
-      setPage(page + 1); // Turn to next page
-    } else {
-      setPage(0); // Reset to cover if at last page
-      setIsBookOpen(false);
-      setBookOpen(false); // Show avatar and title again
+
+    if (direction === "next") {
+      if (page < pages.length) {
+        setPage(page + 1);
+      } else {
+        setPage(0); // Reset to cover if at last page
+        setIsBookOpen(false); // Show avatar and title again
+        setBookOpen(false);
+      }
+    } else if (direction === "prev") {
+      if (page > 0) {
+        if (page < pages.length) {
+          setPage(page - 1);
+        } else {
+          setPage(0); // Reset to cover if at last page
+          setIsBookOpen(false); // Show avatar and title again
+          setBookOpen(false);
+        }
+      }
     }
   };
 
@@ -303,7 +341,13 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
         rotation-y={-Math.PI / 2}
         onPointerDown={(e) => {
           e.stopPropagation(); // avoid propagation !!
-          handleBookClick(page, setPage);
+          const localX = e.point.x;
+          const isRightSide = localX > PAGE_WIDTH / 2;
+          if (isRightSide) {
+            handleBookClick(page, setPage, "next");
+          } else {
+            handleBookClick(page, setPage, "prev");
+          }
         }}
         onPointerEnter={() => setHovered(true)}
         onPointerLeave={() => setHovered(false)}
@@ -318,6 +362,15 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
             {...pageData}
           />
         ))}
+        <ContactShadows
+          position={[0, -1.1, 1]} // slightly under the book base
+          opacity={0.18}
+          scale={[32, 16, 32]}
+          blur={3.5}
+          far={10}
+          resolution={1024}
+          frames={1}
+        />
       </a.group>
     </group>
   );
