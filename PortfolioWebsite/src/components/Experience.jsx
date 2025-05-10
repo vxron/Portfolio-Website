@@ -32,6 +32,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
 import { Box3, Vector3 } from "three";
+import { Tinkerbell } from "./Tinkerbell";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -365,6 +366,14 @@ export const Experience = () => {
           name="contact"
         >
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
+          <Tinkerbell
+            position-z={-12}
+            position-y={3}
+            rotation-y={Math.PI / 15}
+            rotation-x={Math.PI / 9}
+            rotation-z={-Math.PI / 25}
+            scale={0.004}
+          ></Tinkerbell>
         </group>
       </group>
     </>

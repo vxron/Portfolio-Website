@@ -162,7 +162,11 @@ export const Interface = () => {
                 variants={{ visible: { opacity: 1 } }}
                 transition={{ duration: 1, delay: isMobile ? 0 : index * 0.62 }}
               >
-                <a href={project.link} target="_blank">
+                <a
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   <img
                     className="project_image"
                     src={project.image}
