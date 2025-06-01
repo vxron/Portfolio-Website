@@ -74,7 +74,6 @@ a {
 
 .section--right {
   justify-content: flex-end;
-  align-items: flex-start;
   border: 3px solid green;
   max-height: 100%;
 }
