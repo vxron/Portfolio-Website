@@ -3,6 +3,7 @@ import {
   Center,
   Environment,
   useScroll,
+  ContactShadows,
   Float,
   MeshDistortMaterial,
   RoundedBox,
@@ -32,6 +33,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
 import { Box3, Vector3 } from "three";
 import { PinkFox } from "./PinkFox";
+import { Tinkerbell } from "./Tinkerbell";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -190,6 +192,7 @@ export const Experience = () => {
         }
         position-z={isMobile ? -1.8 : 0}
         scale={isMobile ? 1.1 : 1}
+        position-x={-0.05}
       />
       {/* Group containing different website sections; must match array defined in config.js */}
       <group ref={sceneContainer} animate={section}>
@@ -304,22 +307,17 @@ export const Experience = () => {
             </SectionTitle>
           )}
           {/* Hide title when book opens */}
-          <Float
-            rotation-x={-Math.PI / 7}
-            floatIntensity={0.5}
-            speed={2}
-            rotationIntensity={1}
-          >
-            <FlipBook
-              setBookOpen={setBookOpen}
-              position-y={1}
-              position-z={0.5}
-            />
-          </Float>
-          <mesh position-y={-1.5} rotation-x={-Math.PI / 2} receiveShadow>
-            <planeGeometry args={[100, 100]}></planeGeometry>
-            <shadowMaterial transparent opacity={0.2} />
-          </mesh>
+          <group position={[0, 1, 0.5]}>
+            {/* match to FlipBook's y and z */}
+            <Float
+              rotation-x={-Math.PI / 7}
+              floatIntensity={0.5}
+              speed={2}
+              rotationIntensity={1}
+            >
+              <FlipBook setBookOpen={setBookOpen} />
+            </Float>
+          </group>
         </group>
 
         {/* PROJECTS */}
@@ -369,6 +367,14 @@ export const Experience = () => {
           name="contact"
         >
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
+          <Tinkerbell
+            position-z={-12}
+            position-y={3}
+            rotation-y={Math.PI / 15}
+            rotation-x={Math.PI / 9}
+            rotation-z={-Math.PI / 25}
+            scale={0.004}
+          ></Tinkerbell>
         </group>
       </group>
     </>

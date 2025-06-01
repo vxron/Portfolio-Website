@@ -14,6 +14,13 @@
   --royal-blue: #375ec1;
   --text-color: #1a202c;
   --text-light-color: #555;
+  --glass-inset-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 1px rgba(0, 0, 0, 0.05), 0 4px 6px rgba(0, 0, 0, 0.1);
+  --popup-bg: rgba(248, 232, 240, 0.9); /* soft pink base */
+  --popup-border: rgba(227, 115, 131, 0.25); /* subtle watermelon pink border */
+  --popup-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --btn-hover-bg: #f5c6d4;
+  --btn-text-color: #dd5569;
 }
 
 #root {
@@ -487,5 +494,163 @@ a {
 
   .loading-screen__title {
     font-size: 2rem;
+  }
+}
+
+/* make another media query for intermediate screen sizes (tablets) */
+
+/* MUSIC CONTROLS */
+
+.music_popup_overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(
+    var(--light-pink),
+    0.6
+  ); /* or just use a hex with opacity */
+  backdrop-filter: blur(4px); /* sm = 4px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: auto;
+}
+
+.nothing_old_music_popup_div {
+  /*background-color: rgba(var(--light-pink), 0.2);*/
+  background: var(--pink-gradient);
+  border: 1px solid rgba(var(--hot-pink), 0.3);
+  backdrop-filter: blur(6px);
+  padding: 2rem 1.5rem; /* py-8 px-6 default */
+  border-radius: 0.5rem; /* rounded = 8px */
+  text-align: center;
+  box-shadow: var(--glass-inset-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* space-y-8 */
+  pointer-events: auto;
+}
+
+.music_popup_div {
+  background-color: var(--popup-bg);
+  border: 1px solid var(--popup-border);
+  border-radius: 1.25rem;
+  box-shadow: var(--popup-shadow);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  width: 90vw;
+  max-width: 420px;
+  font-family: "Poppins", sans-serif;
+}
+
+.music_popup_p {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: #3d2e30;
+  margin-bottom: 1.5rem;
+}
+
+.music_popup_button_div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.music_popup_button {
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 2rem;
+  background: white;
+  color: var(--btn-text-color);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.music_popup_button_old {
+  padding: 0.5rem 1rem; /* py-2 px-4 */
+  border: 1px solid var(--dark-watermelon-pink);
+  border-style: solid;
+  border-radius: 0.25rem; /* rounded */
+  background: transparent;
+  transition: box-shadow 0.2s ease;
+}
+
+.music_popup_button:hover {
+  background: var(--btn-hover-bg);
+  box-shadow: 0 0 12px rgba(227, 115, 131, 0.25);
+}
+
+.right_margin {
+  margin-right: 0.5rem; /* mr-2 */
+}
+
+.music_div {
+  position: fixed;
+  top: 1rem; /* top-4 = 16px */
+  right: 0.625rem; /* right-2.5 = 10px */
+  z-index: 50;
+}
+
+.music_button {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: rgba(248, 232, 238, 0.6); /* very light pink with transparency */
+  backdrop-filter: blur(8px); /* soft blur glass effect */
+  border: 1px solid rgba(255, 105, 180, 0.3); /* soft hot-pink border */
+  color: var(--foreground);
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  padding: 0.625rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* optional subtle shadow */
+}
+
+.music_button:hover {
+  background: rgba(248, 200, 220, 0.7); /* slightly darker on hover */
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1); /* a bit more depth */
+}
+
+.music_icon {
+  width: 100%;
+  height: 100%;
+  color: black; /* text-foreground */
+  transition: color 0.2s ease;
+}
+
+.group:hover .music-icon {
+  color: var(--hot-pink); /* text-accent on hover */
+}
+
+/* Responsive override for extra small screens and up (xs:right-4 = 1rem) */
+@media (min-width: 475px) {
+  .music-container {
+    right: 1rem;
+  }
+  .music-button {
+    width: 3.5rem; /* w-14 = 56px */
+    height: 3.5rem; /* h-14 = 56px */
+    padding: 1rem; /* p-4 = 16px */
+  }
+}
+
+/* Responsive padding overrides */
+@media (min-width: 475px) {
+  .music_popup_div {
+    padding-left: 2.5rem; /* xs:px-10 */
+    padding-right: 2.5rem;
+  }
+}
+@media (min-width: 640px) {
+  .music_popup_divx {
+    padding-left: 4rem; /* sm:px-16 */
+    padding-right: 4rem;
   }
 }
