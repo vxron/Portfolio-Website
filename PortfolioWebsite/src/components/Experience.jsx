@@ -32,7 +32,6 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
 import { Box3, Vector3 } from "three";
-import { PinkFox } from "./PinkFox";
 import { Tinkerbell } from "./Tinkerbell";
 
 gsap.registerPlugin(ScrollTrigger);

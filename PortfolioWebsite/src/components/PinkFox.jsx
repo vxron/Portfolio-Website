@@ -1,3 +1,5 @@
+/*
+
 import { useRef, useEffect } from "react";
 import { useGLTF, useAnimations } from "@react-three/drei";
 
@@ -58,3 +60,4 @@ export function Fox({ currentAnimation, ...props }) {
 }
 
 useGLTF.preload(scene);
+*/
