@@ -121,7 +121,7 @@ export const config = {
       name: "3D Spatial Mapper",
       description: "",
       image: "projects/3d-spatial-mapper.png",
-      link: "pdfs/spatial-mapper.pdf",
+      link: "pdfs/spatial-mapper-slides.pdf",
       tags: [],
     },
     {

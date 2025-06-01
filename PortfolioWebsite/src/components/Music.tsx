@@ -94,7 +94,7 @@ export const BgMusic = () => {
       )}
 
       <audio ref={audioRef} loop>
-        <source src={"/audio/Fee Shi.mp3"} type="audio/mpeg" />
+        <source src={"/audio/Sahar El Layali Violin.mp3"} type="audio/mpeg" />
         your browser does not support the audio element.
       </audio>
       <motion.button
