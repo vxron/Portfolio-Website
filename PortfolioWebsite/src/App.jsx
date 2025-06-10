@@ -2,7 +2,7 @@
 import { ScrollControls, Scroll } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
-import { useState, Suspense } from "react";
+import { useState, Suspense, useRef } from "react";
 import * as THREE from "three";
 import { config } from "./config";
 import { Interface } from "./components/Interface";
@@ -10,7 +10,6 @@ import { motion, MotionConfig } from "motion/react";
 import { Menu } from "./components/Menu";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { BgMusic } from "./components/Music";
-
 /*
 const Lights = () => {
   const ref = useRef();
@@ -37,6 +36,8 @@ const Lights = () => {
 function App() {
   // keep track of when page has loaded
   const [ready, setReady] = useState(false);
+  const tinkerbellRef = useRef();
+
   // dimensions of 3d scene
   const width = 8.882429021961798;
   const height = 1.1618082784116268 * 3.5;
@@ -48,7 +49,11 @@ function App() {
     <>
       <LoadingScreen onFinish={() => setReady(true)}></LoadingScreen>
       {ready && <BgMusic />}
-      <Canvas shadows camera={{ position: [0, 0.5, 5], fov: fov }}>
+      <Canvas
+        shadows
+        gl={{ antialias: true }}
+        camera={{ position: [0, 0.5, 5], fov: fov }}
+      >
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 10, 50]} />
         {/* Global ambient light for base brightness */}

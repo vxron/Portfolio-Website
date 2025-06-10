@@ -1,34 +1,40 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { useGLTF, useFBX, useAnimations } from "@react-three/drei";
 
-export function Tinkerbell(props) {
+export const Tinkerbell = forwardRef((props, ref) => {
   const group = useRef();
+  // Ref to Tinkerbell's foot for trail
+  const footRef = useRef();
 
-  // Load static model
-  const { scene, animations: glbAnimations } = useGLTF(
-    "/models/TinkerBell.glb"
-  );
+  // Load the model and animations
+  const gltf = useGLTF("/models/TinkerBell2.glb");
+  const fbx = useFBX("/animations/TinkerBell.fbx");
 
-  // Load wing animation
-  const wingAnim = useFBX("/animations/TinkerBell.fbx");
-
-  // Attach animation to group
-  const { actions } = useAnimations([wingAnim.animations[0]], group);
+  // Attach FBX animation to the GLB model
+  const { actions } = useAnimations([fbx.animations[0]], group);
 
   useEffect(() => {
-    // Start wing animation
-    if (actions && wingAnim.animations[0]) {
-      const name = wingAnim.animations[0].name;
+    const name = fbx.animations[0]?.name;
+    if (actions && name) {
       actions[name]?.reset().fadeIn(0.5).play();
     }
-  }, [actions, wingAnim]);
+  }, [actions, fbx]);
+
+  // Expose the foot ref to parent
+  useImperativeHandle(ref, () => footRef.current);
 
   return (
     <group ref={group} {...props}>
-      <primitive object={scene} />
+      <primitive object={gltf.scene} />
+      <primitive
+        object={gltf.scene.getObjectByName("LeftShoe")}
+        ref={footRef}
+      />
     </group>
   );
-}
+});
 
-useGLTF.preload("/models/TinkerBell.glb");
+// Preload assets
+useGLTF.preload("/models/TinkerBell2.glb");
 useFBX.preload("/animations/TinkerBell.fbx");
+Tinkerbell.displayName = "Tinkerbell";

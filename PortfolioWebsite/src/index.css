@@ -76,6 +76,7 @@ a {
   justify-content: flex-end;
   border: 3px solid green;
   max-height: 100%;
+  align-items: center; /* CHECK IF THIS VERT ALIGNS SKILLS */
 }
 
 .section--left {
@@ -316,31 +317,137 @@ a {
 
 /* CONTACT SECTION */
 
+/* Gradient animation keyframes */
+@keyframes princessGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 .contact {
+  height: auto;
   margin: 1rem;
-  padding: 1rem;
-  background: var(--vlight-pink);
-  backdrop-filter: blur(8px);
-  border-radius: 8px;
-  min-width: 280px;
-}
-
-.contact_name {
-  color: var(--text-color);
-  font-weight: bold;
-  font-size: 1.5rem;
-  margin: 0;
-}
-
-.contact_socials {
+  padding: 0.1rem;
+  border-radius: 10px;
+  min-width: unset;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 192, 203, 0.3);
+  backdrop-filter: blur(4px);
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
   display: flex;
-  gap: 1rem; /*gap between icons*/
-  margin-top: 1rem;
+  font-size: 0.9rem;
 }
 
-.contact_socials_icon {
-  height: 32px;
-  width: 32px;
+/* 'Before' used to get around Framer Motion for gradient effect */
+.contact::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  /* These control visual size to match .contact */
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  min-width: unset;
+  background: linear-gradient(
+    135deg,
+    #ffe6f0,
+    /* soft blush */ #f7c0d7,
+    /* watermelon-pink with less saturation */ #e9c9e6,
+    /* pink-lavender blend */ #ffe6f0
+  );
+  background-size: 300% 300%;
+  animation: princessGradient 12s ease-in-out infinite;
+  opacity: 1;
+}
+
+.contact_div {
+  width: 100%;
+  max-width: 400px;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0.25rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.contact_ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; /* gap-6 = 6 * 0.25rem */
+  color: #4a4a4a;
+  width: auto;
+  max-width: 400px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.contact_li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* gap-4 = 4 * 0.25rem */
+  transition: transform 0.2s ease, color 0.2s ease;
+  color: black;
+}
+
+.contact_li:hover {
+  transform: scale(1.05);
+  color: #a3365d;
+  font-weight: 500;
+}
+
+.contact a:hover {
+  color: #a3365d;
+}
+
+.contact_icon {
+  color: var(--dark-watermelon-pink);
+  flex-shrink: 0;
+}
+
+.contact a {
+  color: black;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  word-break: break-word;
+}
+
+/* Position contact div at ~65% height of viewport */
+@media (min-width: 991px) {
+  .section--right {
+    align-items: flex-start;
+  }
+
+  .contact {
+    margin-top: calc(75vh - 33%); /* approximate vertical offset */
+    margin-right: calc(10vw);
+  }
 }
 
 /* MENU BAR */
@@ -494,6 +601,10 @@ a {
 
   .loading-screen__title {
     font-size: 2rem;
+  }
+
+  .contact_ul {
+    font-size: 0.9rem;
   }
 }
 
@@ -652,5 +763,12 @@ a {
   .music_popup_divx {
     padding-left: 4rem; /* sm:px-16 */
     padding-right: 4rem;
+  }
+}
+@media (max-width: 640px) {
+  .menu {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-left: 3rem; /* 👈 Add this line */
   }
 }

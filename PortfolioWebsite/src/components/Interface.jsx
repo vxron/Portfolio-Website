@@ -182,7 +182,7 @@ export const Interface = () => {
           </motion.div>
         </section>
         {/* CONTACT */}
-        <section className="contact_div section section--left mobile--section--bottom">
+        <section className="section section--right mobile--section--bottom">
           <motion.div
             className="contact"
             whileInView={"visible"}
@@ -190,18 +190,18 @@ export const Interface = () => {
             variants={{ visible: { opacity: 1 } }}
           >
             {/* Left Side: Contact Info List */}
-            <div className="flex-1 min-w-[50%] flex flex-col justify-center items-start p-6">
-              <ul className="flex flex-col gap-6 text-lg text-black-500 w-full max-w-[400px] animate-fadeIn">
-                <li className="flex items-center gap-4 transition-all hover:scale-105">
-                  <FaEnvelope className="text-pink-500" size={24} />
+            <div className="contact_div">
+              <ul className="contact_ul">
+                <li className="contact_li">
+                  <FaEnvelope className="contact_icon" size={24} />
                   <span className="break-all">vlmarrocco@gmail.com</span>
                 </li>
-                <li className="flex items-center gap-4 transition-all hover:scale-105">
-                  <FaPhone className="text-pink-500" size={24} />
+                <li className="contact_li">
+                  <FaPhone className="contact_icon" size={24} />
                   <span>+1 (905) 243-2030</span>
                 </li>
-                <li className="flex items-center gap-4 transition-all hover:scale-105">
-                  <FaLinkedin className="text-pink-500" size={24} />
+                <li className="contact_li">
+                  <FaLinkedin className="contact_icon" size={24} />
                   <a
                     href="https://www.linkedin.com/in/vlmarrocco/"
                     target="_blank"
@@ -211,8 +211,8 @@ export const Interface = () => {
                     linkedin.com/in/vlmarrocco
                   </a>
                 </li>
-                <li className="flex items-center gap-4 transition-all hover:scale-105">
-                  <FaGithub className="text-pink-500" size={24} />
+                <li className="contact_li">
+                  <FaGithub className="contact_icon" size={24} />
                   <a
                     href="https://github.com/vxron"
                     target="_blank"

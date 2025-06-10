@@ -32,7 +32,9 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
 import { Box3, Vector3 } from "three";
-import { Tinkerbell } from "./Tinkerbell";
+import { TinkerTrail } from "./TinkerbellTrail";
+import { TinkerbellController } from "./TinkerbellUI";
+import { Cursor } from "./Cursor";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,6 +56,8 @@ export const Experience = () => {
   const SECTION_DISTANCE = isMobile ? 10 : 20;
 
   const titleRef = useRef();
+  const tinkerbellRef = useRef();
+  const [direction, setDirection] = useState(1); // shared direction
 
   //const setGlobalSection = useSectionState((state) => state.setSection);
 
@@ -365,15 +369,20 @@ export const Experience = () => {
           rotation-y={Math.PI / 5}
           name="contact"
         >
+          <Cursor tinkerRef={tinkerbellRef}></Cursor>
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
-          <Tinkerbell
+          {/*ref={tinkerbellRef}
+            setDirection={setDirection} // pass setter to child
+            direction={direction}*/}
+          <TinkerbellController
+            ref={tinkerbellRef}
             position-z={-12}
-            position-y={3}
+            position-y={1}
+            position-x={isMobile ? 10 : 0}
             rotation-y={Math.PI / 15}
             rotation-x={Math.PI / 9}
             rotation-z={-Math.PI / 25}
-            scale={0.004}
-          ></Tinkerbell>
+          ></TinkerbellController>
         </group>
       </group>
     </>
