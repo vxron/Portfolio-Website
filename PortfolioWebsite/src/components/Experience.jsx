@@ -35,6 +35,8 @@ import { Box3, Vector3 } from "three";
 import { TinkerTrail } from "./TinkerbellTrail";
 import { TinkerbellController } from "./TinkerbellUI";
 import { Cursor } from "./Cursor";
+import { PixieDust } from "./FairyDust2";
+import { VFXParticles } from "./VFXParticles";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -383,6 +385,8 @@ export const Experience = () => {
             rotation-x={Math.PI / 9}
             rotation-z={-Math.PI / 25}
           ></TinkerbellController>
+          {/*<PixieDust />*/}
+          <VFXParticles></VFXParticles>
         </group>
       </group>
     </>

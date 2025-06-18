@@ -7,7 +7,7 @@ export const Tinkerbell = forwardRef((props, ref) => {
   const footRef = useRef();
 
   // Load the model and animations
-  const gltf = useGLTF("/models/TinkerBell2.glb");
+  const gltf = useGLTF("/models/TinkerBellSmall.glb");
   const fbx = useFBX("/animations/TinkerBell.fbx");
 
   // Attach FBX animation to the GLB model
@@ -35,6 +35,6 @@ export const Tinkerbell = forwardRef((props, ref) => {
 });
 
 // Preload assets
-useGLTF.preload("/models/TinkerBell2.glb");
+useGLTF.preload("/models/TinkerBellSmall.glb");
 useFBX.preload("/animations/TinkerBell.fbx");
 Tinkerbell.displayName = "Tinkerbell";

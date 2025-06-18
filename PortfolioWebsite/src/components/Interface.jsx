@@ -6,7 +6,6 @@ import { motion } from "motion/react";
 import { config } from "../config";
 import { atom, useAtom } from "jotai";
 //import { useSectionState } from "../States";
-import { useSection } from "../States";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
