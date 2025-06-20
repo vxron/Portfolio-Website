@@ -37,6 +37,7 @@ import { TinkerbellController } from "./TinkerbellUI";
 import { Cursor } from "./Cursor";
 import { PixieDust } from "./FairyDust2";
 import { VFXParticles } from "./VFXParticles";
+import { VFXEmitter } from "./VFXEmitter";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -386,7 +387,8 @@ export const Experience = () => {
             rotation-z={-Math.PI / 25}
           ></TinkerbellController>
           {/*<PixieDust />*/}
-          <VFXParticles></VFXParticles>
+          <VFXParticles position={[6, -2, 0]} name="sparks"></VFXParticles>
+          <VFXEmitter emitter="sparks"></VFXEmitter>
         </group>
       </group>
     </>
