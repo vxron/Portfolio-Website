@@ -1,4 +1,6 @@
 // components/PixieDust.js
+// closest working version rn but not working :,)
+
 import { useThree, useFrame } from "@react-three/fiber";
 import Nebula, { SpriteRenderer } from "three-nebula";
 import * as THREE from "three";

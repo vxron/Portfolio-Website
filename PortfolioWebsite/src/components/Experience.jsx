@@ -38,6 +38,7 @@ import { Cursor } from "./Cursor";
 import { PixieDust } from "./FairyDust2";
 import { VFXParticles } from "./VFXParticles";
 import { VFXEmitter } from "./VFXEmitter";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -63,7 +64,8 @@ export const Experience = () => {
   const [direction, setDirection] = useState(1); // shared direction
 
   //const setGlobalSection = useSectionState((state) => state.setSection);
-
+  const emitterBlue = useRef();
+  const emitterRed = useRef();
   // Continuously store opacity for each section group in a map array (basically a dict)
   // by default, opacity state gets set to 1 when the section_name from config.js matches current section, 0 for others
   // use useRef instead of useState to avoid setting states in useFrame thereby avoid triggering re-renders
@@ -77,7 +79,17 @@ export const Experience = () => {
   );
 
   // Animate sceneContainer group to move through different sections
-  useFrame(() => {
+  useFrame(({ clock }) => {
+    const time = clock.elapsedTime;
+    // update VFX particles position
+    emitterRed.current.position.x = Math.sin(time * 6) * 1.5;
+    emitterRed.current.position.y = Math.cos(time * 3) * 1.5;
+    emitterRed.current.position.z = Math.sin(time * 4) * 1.5;
+
+    emitterBlue.current.position.x = Math.cos(time * 6) * 1.5;
+    emitterBlue.current.position.y = Math.sin(time * 3) * 1.5;
+    emitterBlue.current.position.z = Math.cos(time * 4) * 1.5;
+
     // separate logic for mobile experience for horizontal scrolling
     if (isMobile) {
       sceneContainer.current.position.x =
@@ -387,8 +399,43 @@ export const Experience = () => {
             rotation-z={-Math.PI / 25}
           ></TinkerbellController>
           {/*<PixieDust />*/}
-          <VFXParticles position={[6, -2, 0]} name="sparks"></VFXParticles>
-          <VFXEmitter emitter="sparks"></VFXEmitter>
+          <VFXParticles
+            position={[6, -2, 0]}
+            name="sparks"
+            settings={{ nbParticles: 100000, renderMode: "billboard" }}
+          ></VFXParticles>
+          {/*<VFXEmitter emitter="sparks"></VFXEmitter>*/}
+          <VFXEmitter
+            ref={emitterRed}
+            emitter="sparks"
+            settings={{
+              nbParticles: 10000,
+              colorStart: ["yellowgreen", "palegreen"],
+              colorEnd: "#DA70D6",
+              size: [0.01, 0.1],
+              startPositionMin: [0, 0, 0],
+              startPositionMax: [0, 0, 0],
+              directionMin: [-0.5, 0, -0.5],
+              directionMax: [0.5, 1, 0.5],
+              speed: [1, 5],
+              loop: true,
+            }}
+          />
+          <VFXEmitter
+            ref={emitterBlue}
+            emitter="sparks"
+            settings={{
+              nbParticles: 10000,
+              colorStart: ["palegoldenrod", "palegreen"],
+              size: [0.01, 0.1],
+              startPositionMin: [0, 0, 0],
+              startPositionMax: [0, 0, 0],
+              directionMin: [-0.5, 0, -0.5],
+              directionMax: [0.5, 1, 0.5],
+              speed: [1, 5],
+              loop: true,
+            }}
+          />
         </group>
       </group>
     </>

@@ -27,9 +27,56 @@
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { useVFX } from "../hooks/VFXStore";
 import { useFrame } from "@react-three/fiber";
-import { MathUtils } from "three";
+import { MathUtils, Euler, Quaternion, Vector3 } from "three";
 
-// fwd ref & imperative handle to expose the ref of the object3D component to the parent (manipulate VFXEmitter from the parent)
+// Dummy variables to keep track of emitter world position
+const worldPosition = new Vector3();
+const worldQuaternion = new Quaternion();
+const worldEuler = new Euler();
+const worldRotation = new Euler();
+const worldScale = new Vector3();
+
+/* VFXEmitterSettings
+ * type definition for VFXEmitter using JSDoc
+ * (so that we don't have to open this file each time we need to know the settings from Experience.jsx)
+ * MAKE SURE THEY MATCH SETTINGS BELOW
+ */
+/**
+ * @typedef {Object} VFXEmitterSettings
+ * @property {number} [duration=1]
+ * @property {number} [nbParticles=1000]
+ * @property {"time"|"burst"} [spawnMode="time"]
+ * @property {boolean} [loop=false]
+ * @property {number} [delay=0]
+ * @property {string[]} [colorStart=["blue", "skyblue"]]
+ * @property {string[]} [colorEnd=[]]
+ * @property {[number, number]} [particlesLifetime=[10, 20]]
+ * @property {[number, number]} [speed=[5, 20]]
+ * @property {[number, number]} [size=[0.1, 1]]
+ * @property {[number, number, number]} [startPositionMin=[-1, -1, -1]]
+ * @property {[number, number, number]} [startPositionMax=[1, 1, 1]]
+ * @property {[number, number, number]} [startRotationMin=[0, 0, 0]]
+ * @property {[number, number, number]} [startRotationMax=[0, 0, 0]]
+ * @property {[number, number, number]} [rotationSpeedMin=[0, 0, 0]]
+ * @property {[number, number, number]} [rotationSpeedMax=[0, 0, 0]]
+ * @property {[number, number, number]} [directionMin=[0, 0, 0]]
+ * @property {[number, number, number]} [directionMax=[0, 0, 0]]
+ */
+
+/* VFXEmitterProps
+ */
+/**
+ * @typedef {Object} VFXEmitterProps
+ * @property {VFXEmitterSettings} [settings]
+ * @property {string} emitter
+ * @property {React.RefObject<THREE.Object3D>} [ref]
+ */
+
+/* Mark VFXEmitter as a React.FC that takes VFXEmitter as props
+ */
+/**
+ * @type React.FC<VFXEmitterProps>
+ */
 export const VFXEmitter = forwardRef(
   ({ emitter, settings = {}, ...props }, forwardedRef) => {
     const {
@@ -38,9 +85,9 @@ export const VFXEmitter = forwardRef(
       spawnMode = "time", // time or burst
       loop = false,
       delay = 0,
-      colorStart = ["white", "skyblue"],
+      colorStart = ["blue", "skyblue"],
       colorEnd = [],
-      particlesLifetime = [0.1, 1],
+      particlesLifetime = [10, 20],
       speed = [5, 20],
       size = [0.1, 1],
       startPositionMin = [-1, -1, -1],
@@ -79,16 +126,28 @@ export const VFXEmitter = forwardRef(
         // calculate rate of particles to emit
         const rate = particlesToEmit - emitted.current;
         if (rate > 0 && elapsedTime.current >= delay) {
-          // passing callback function (setup) to emit
+          // passing callback function (setup) to emit as 3rd param
           emit(emitter, rate, () => {
+            // decompose worldMatrix to get emitter's position, rotation, scale
+            ref.current.updateWorldMatrix(true);
+            const worldMatrix = ref.current.matrixWorld;
+            worldMatrix.decompose(worldPosition, worldQuaternion, worldScale);
+            worldEuler.setFromQuaternion(worldQuaternion);
+            worldRotation.setFromQuaternion(worldQuaternion);
+
+            // generate all the desired particle attributes
             const randSize = MathUtils.randFloat(size[0], size[1]);
             const color =
               colorStart[MathUtils.randInt(0, colorStart.length - 1)];
             return {
+              // we use worldPosition to make particles follow emitter
               position: [
-                MathUtils.randFloat(startPositionMin[0], startPositionMax[0]),
-                MathUtils.randFloat(startPositionMin[1], startPositionMax[1]),
-                MathUtils.randFloat(startPositionMin[2], startPositionMax[2]),
+                worldPosition.x +
+                  MathUtils.randFloat(startPositionMin[0], startPositionMax[0]),
+                worldPosition.y +
+                  MathUtils.randFloat(startPositionMin[1], startPositionMax[1]),
+                worldPosition.z +
+                  MathUtils.randFloat(startPositionMin[2], startPositionMax[2]),
               ],
               direction: [
                 MathUtils.randFloat(directionMin[0], directionMax[0]),
