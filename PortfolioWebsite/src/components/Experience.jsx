@@ -8,6 +8,7 @@ import {
   MeshDistortMaterial,
   RoundedBox,
   Html,
+  useTexture,
 } from "@react-three/drei";
 import { Avatar } from "./Avatar";
 import { useRef, useState, useEffect } from "react";
@@ -32,10 +33,8 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
 import { Box3, Vector3 } from "three";
-import { TinkerTrail } from "./TinkerbellTrail";
 import { TinkerbellController } from "./TinkerbellUI";
 import { Cursor } from "./Cursor";
-import { PixieDust } from "./FairyDust2";
 import { VFXParticles } from "./VFXParticles";
 import { VFXEmitter } from "./VFXEmitter";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
@@ -66,6 +65,7 @@ export const Experience = () => {
   //const setGlobalSection = useSectionState((state) => state.setSection);
   const emitterBlue = useRef();
   const emitterRed = useRef();
+  const alphaMap = useTexture("textures/Particles/symbol_02.png");
   // Continuously store opacity for each section group in a map array (basically a dict)
   // by default, opacity state gets set to 1 when the section_name from config.js matches current section, 0 for others
   // use useRef instead of useState to avoid setting states in useFrame thereby avoid triggering re-renders
@@ -402,38 +402,48 @@ export const Experience = () => {
           <VFXParticles
             position={[6, -2, 0]}
             name="sparks"
-            settings={{ nbParticles: 100000, renderMode: "billboard" }}
+            alphaMap={alphaMap}
+            settings={{
+              nbParticles: 100000,
+              renderMode: "billboard",
+              intensity: 1.2,
+              fadeSize: [0, 0],
+              fadeAlpha: [0, 1],
+            }}
           ></VFXParticles>
           {/*<VFXEmitter emitter="sparks"></VFXEmitter>*/}
           <VFXEmitter
             ref={emitterRed}
             emitter="sparks"
             settings={{
-              nbParticles: 10000,
+              nbParticles: 5000,
               colorStart: ["yellowgreen", "palegreen"],
               colorEnd: "#DA70D6",
-              size: [0.01, 0.1],
+              size: [0.02, 0.2],
               startPositionMin: [0, 0, 0],
               startPositionMax: [0, 0, 0],
               directionMin: [-0.5, 0, -0.5],
               directionMax: [0.5, 1, 0.5],
               speed: [1, 5],
               loop: true,
+              lifetime: [1, 3],
             }}
           />
           <VFXEmitter
+            debug
             ref={emitterBlue}
             emitter="sparks"
             settings={{
-              nbParticles: 10000,
+              nbParticles: 8000,
               colorStart: ["palegoldenrod", "palegreen"],
-              size: [0.01, 0.1],
+              size: [0.1, 0.9],
               startPositionMin: [0, 0, 0],
               startPositionMax: [0, 0, 0],
               directionMin: [-0.5, 0, -0.5],
               directionMax: [0.5, 1, 0.5],
               speed: [1, 5],
               loop: true,
+              lifetime: [3, 10],
             }}
           />
         </group>

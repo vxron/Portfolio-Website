@@ -31,24 +31,38 @@ const Modal = ({ onClose, toggle }: { toggle: any; onClose: any }) => {
 };
 
 export const BgMusic = () => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioRef1 = useRef<HTMLAudioElement | null>(null);
+  const audioRef2 = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [currentTrack, setCurrentTrack] = useState<1 | 2>(1); // track swapper
+
+  const playCurrentTrack = () => {
+    const current = currentTrack === 1 ? audioRef1.current : audioRef2.current;
+    const other = currentTrack === 1 ? audioRef2.current : audioRef1.current;
+    other?.pause();
+    other?.currentTime && (other.currentTime = 0);
+    current?.play();
+  };
+
+  const handleTrackEnd = () => {
+    setCurrentTrack((prev) => (prev === 1 ? 2 : 1));
+  };
 
   const handleFirstUserInteraction = useCallback(() => {
     const musicConsent = localStorage.getItem("musicConsent");
-    if (musicConsent === "true" && !isPlaying && audioRef.current) {
-      audioRef.current.play();
+    if (musicConsent === "true" && !isPlaying) {
+      playCurrentTrack();
       setIsPlaying(true);
     }
 
     ["click", "keydown", "touchstart"].forEach((event) =>
       document.removeEventListener(event, handleFirstUserInteraction)
     );
-  }, [isPlaying, audioRef]);
+  }, [isPlaying, currentTrack]);
 
   useEffect(() => {
-    console.log("👀 Modal shown?", showModal); //debugging
+    console.log(" Modal shown?", showModal); //debugging
     //setShowModal(true); // Force modal for testing
     const consent = localStorage.getItem("musicConsent");
     const consentTime = localStorage.getItem("consentTime");
@@ -63,7 +77,7 @@ export const BgMusic = () => {
       if (consent === "true") {
         // Browser allows audio only after interaction — listen for first one
         const resumePlayback = () => {
-          audioRef.current?.play();
+          audioRef1.current?.play();
           ["click", "keydown", "touchstart"].forEach((event) =>
             document.removeEventListener(event, resumePlayback)
           );
@@ -78,11 +92,35 @@ export const BgMusic = () => {
     }
   }, [handleFirstUserInteraction]);
 
+  // When track ends, switch and play the next one
+  useEffect(() => {
+    const current = currentTrack === 1 ? audioRef1.current : audioRef2.current;
+    const handleEnd = () => handleTrackEnd();
+
+    if (current) {
+      current.addEventListener("ended", handleEnd);
+    }
+
+    return () => {
+      current?.removeEventListener("ended", handleEnd);
+    };
+  }, [currentTrack]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      playCurrentTrack();
+    }
+  }, [currentTrack]);
+
   const toggle = () => {
     const newState = !isPlaying;
     setIsPlaying(!isPlaying);
-    if (audioRef.current)
-      newState ? audioRef.current.play() : audioRef.current.pause();
+    if (newState) {
+      playCurrentTrack();
+    } else {
+      audioRef1.current?.pause();
+      audioRef2.current?.pause();
+    }
     localStorage.setItem("musicConsent", String(newState));
     localStorage.setItem("consentTime", new Date().toISOString());
     setShowModal(false);
@@ -93,8 +131,12 @@ export const BgMusic = () => {
         <Modal onClose={() => setShowModal(false)} toggle={toggle} />
       )}
 
-      <audio ref={audioRef} loop>
+      <audio ref={audioRef1}>
         <source src={"/audio/Sahar El Layali Violin.mp3"} type="audio/mpeg" />
+        your browser does not support the audio element.
+      </audio>
+      <audio ref={audioRef2}>
+        <source src={"/audio/Fee Shi.mp3"} type="audio/mpeg" />
         your browser does not support the audio element.
       </audio>
       <motion.button

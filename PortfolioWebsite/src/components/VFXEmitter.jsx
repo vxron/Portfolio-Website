@@ -24,10 +24,18 @@
  * directionMax: max possible random direction vec
  */
 
-import { forwardRef, useImperativeHandle, useRef } from "react";
+import {
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 import { useVFX } from "../hooks/VFXStore";
 import { useFrame } from "@react-three/fiber";
 import { MathUtils, Euler, Quaternion, Vector3 } from "three";
+import { VFXBuilderEmitter } from "./VFXBuilder";
 
 // Dummy variables to keep track of emitter world position
 const worldPosition = new Vector3();
@@ -50,7 +58,7 @@ const worldScale = new Vector3();
  * @property {number} [delay=0]
  * @property {string[]} [colorStart=["blue", "skyblue"]]
  * @property {string[]} [colorEnd=[]]
- * @property {[number, number]} [particlesLifetime=[10, 20]]
+ * @property {[number, number]} [particlesLifetime=[0.5, 6]]
  * @property {[number, number]} [speed=[5, 20]]
  * @property {[number, number]} [size=[0.1, 1]]
  * @property {[number, number, number]} [startPositionMin=[-1, -1, -1]]
@@ -67,6 +75,7 @@ const worldScale = new Vector3();
  */
 /**
  * @typedef {Object} VFXEmitterProps
+ * @property {boolean} [debug]
  * @property {VFXEmitterSettings} [settings]
  * @property {string} emitter
  * @property {React.RefObject<THREE.Object3D>} [ref]
@@ -78,27 +87,35 @@ const worldScale = new Vector3();
  * @type React.FC<VFXEmitterProps>
  */
 export const VFXEmitter = forwardRef(
-  ({ emitter, settings = {}, ...props }, forwardedRef) => {
-    const {
-      duration = 1,
-      nbParticles = 1000,
-      spawnMode = "time", // time or burst
-      loop = false,
-      delay = 0,
-      colorStart = ["blue", "skyblue"],
-      colorEnd = [],
-      particlesLifetime = [10, 20],
-      speed = [5, 20],
-      size = [0.1, 1],
-      startPositionMin = [-1, -1, -1],
-      startPositionMax = [1, 1, 1],
-      startRotationMin = [0, 0, 0],
-      startRotationMax = [0, 0, 0],
-      rotationSpeedMin = [0, 0, 0],
-      rotationSpeedMax = [0, 0, 0],
-      directionMin = [0, 0, 0],
-      directionMax = [0, 0, 0],
-    } = settings;
+  ({ debug = false, emitter, settings = {}, ...props }, forwardedRef) => {
+    const [
+      {
+        duration = 1,
+        nbParticles = 1000,
+        spawnMode = "time", // time or burst
+        loop = false,
+        delay = 0,
+        colorStart = ["blue", "skyblue"],
+        colorEnd = [],
+        particlesLifetime = [0.5, 6],
+        speed = [5, 20],
+        size = [0.1, 1],
+        startPositionMin = [-1, -1, -1],
+        startPositionMax = [1, 1, 1],
+        startRotationMin = [0, 0, 0],
+        startRotationMax = [0, 0, 0],
+        rotationSpeedMin = [0, 0, 0],
+        rotationSpeedMax = [0, 0, 0],
+        directionMin = [0, 0, 0],
+        directionMax = [0, 0, 0],
+      },
+      setSettings,
+    ] = useState(settings);
+
+    const onRestart = useCallback(() => {
+      emitted.current = 0;
+      elapsedTime.current = 0;
+    }, []);
 
     const emit = useVFX((state) => state.emit);
     const ref = useRef();
@@ -183,8 +200,21 @@ export const VFXEmitter = forwardRef(
       elapsedTime.current += delta;
     });
 
+    const settingsBuilder = useMemo(
+      () =>
+        debug ? (
+          <VFXBuilderEmitter
+            settings={settings}
+            onChange={setSettings}
+            onRestart={onRestart}
+          />
+        ) : null,
+      [debug]
+    );
+
     return (
       <>
+        {settingsBuilder}
         <object3D {...props} ref={ref} />
       </>
     );
