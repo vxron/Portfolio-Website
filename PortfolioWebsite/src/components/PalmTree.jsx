@@ -10,9 +10,7 @@ import { useMobile } from "../hooks/useMobile";
 
 export function PalmTree(props) {
   const { isMobile } = useMobile();
-  const { nodes, materials } = isMobile
-    ? useGLTF("/models/Palm tree.glb")
-    : useGLTF("/models/Palm tree Pink.glb");
+  const { nodes, materials } = useGLTF("/models/Palm tree Pink.glb");
   return (
     <group {...props} dispose={null}>
       <mesh

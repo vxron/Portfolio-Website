@@ -38,6 +38,8 @@ import { Cursor } from "./Cursor";
 import { VFXParticles } from "./VFXParticles";
 import { VFXEmitter } from "./VFXEmitter";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import { Fireworks } from "./Fireworks";
+import { FireworksUI } from "./FireWorksUI";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -239,7 +241,7 @@ export const Experience = () => {
                 : THREE.MathUtils.degToRad(140)
             }
             position={
-              isMobile ? [1, -0.1, -5] : [4.8 * scaleFactor, -0.5, -4.1]
+              isMobile ? [1, -0.6, -5] : [4.8 * scaleFactor, -0.5, -4.1]
             }
           />
           <group scale={isMobile ? 0.3 : 1} position-y={isMobile ? -0.4 : 0}>
@@ -253,7 +255,7 @@ export const Experience = () => {
                 <SectionTitle
                   size={0.8}
                   position-x={1.1}
-                  position-y={1.4}
+                  position-y={isMobile ? 1 : 1.4}
                   position-z={-3}
                   bevelEnabled
                   bevelThickness={0.3}
@@ -269,6 +271,7 @@ export const Experience = () => {
                 ref={titleRef}
                 size={1.1}
                 position-z={-3}
+                position-y={isMobile ? -0.5 : 0}
                 bevelEnabled
                 bevelThickness={0.3}
                 rotation-y={isMobile ? Math.PI / 20 : Math.PI / 13}
@@ -389,6 +392,8 @@ export const Experience = () => {
           {/*ref={tinkerbellRef}
             setDirection={setDirection} // pass setter to child
             direction={direction}*/}
+          <FireworksUI></FireworksUI>
+          <Fireworks></Fireworks>
           <TinkerbellController
             ref={tinkerbellRef}
             position-z={-12}

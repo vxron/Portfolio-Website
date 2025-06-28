@@ -192,5 +192,7 @@ export const VFXBuilderEmitter = ({ settings, onChange, onRestart }) => {
     }
   }, [settings]);
 
-  onChange(builtSettings);
+  useEffect(() => {
+    onChange(builtSettings);
+  }, [onChange, builtSettings]);
 };

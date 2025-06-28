@@ -10,6 +10,7 @@ import { motion, MotionConfig } from "motion/react";
 import { Menu } from "./components/Menu";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { BgMusic } from "./components/Music";
+import { FireworksUI } from "./components/FireWorksUI";
 /*
 const Lights = () => {
   const ref = useRef();
@@ -75,7 +76,6 @@ function App() {
           penumbra={0.5}
           castShadow
         />*/}
-
         <ScrollControls
           pages={config.sections.length}
           damping={0.1}
