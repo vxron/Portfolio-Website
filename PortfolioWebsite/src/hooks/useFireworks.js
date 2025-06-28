@@ -19,10 +19,19 @@ const useFireworks = create((set) => {
               velocity: [randFloat(-8, 8), randFloat(5, 10), randFloat(-8, 8)], // direction/speed of firework
               delay: randFloat(0.8, 2), // time before firework explodes
               color: ["skyblue", "pink"],
+              time: Date.now(), // when the firework spawns:)
             },
           ],
         };
       });
+      // method to remove fireworks that have exploded and faded away
+      setTimeout(() => {
+        set((state) => ({
+          fireworks: state.fireworks.filter(
+            (firework) => Date.now() - firework.time < 4000 // max delay of 2 seconds +  Max lifetime of particles of 2 seconds
+          ),
+        }));
+      }, 4000);
     },
   };
 });

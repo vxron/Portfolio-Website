@@ -1,5 +1,7 @@
 // THIS FILE CONTAINS TARGET GROUP WE WANT TO TRAIL
 
+// FIX ALL THIS LOGIC BY WATCIHNG END OF WIZARD GAME VID
+
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useRef } from "react";

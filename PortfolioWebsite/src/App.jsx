@@ -10,7 +10,6 @@ import { motion, MotionConfig } from "motion/react";
 import { Menu } from "./components/Menu";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { BgMusic } from "./components/Music";
-import { FireworksUI } from "./components/FireWorksUI";
 /*
 const Lights = () => {
   const ref = useRef();

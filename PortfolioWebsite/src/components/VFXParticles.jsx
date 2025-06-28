@@ -139,7 +139,7 @@ export const VFXParticles = ({
         [tmpColor.r, tmpColor.g, tmpColor.b],
         cursor.current * 3
       );
-      tmpColor.setStyle(colorEnd);
+      //tmpColor.setStyle(colorEnd); VERONICA
       instanceColorEnd.set(
         [tmpColor.r, tmpColor.g, tmpColor.b],
         cursor.current * 3
@@ -180,13 +180,10 @@ export const VFXParticles = ({
     mesh.current.material.uniforms.uFadeSize.value = fadeSize;
     mesh.current.material.uniforms.uFadeAlpha.value = fadeAlpha;
     // Update timer --> something wrong here
-    console.log(mesh.current.material.uniforms.uTime);
     const mat = mesh.current.material;
     if (Array.isArray(mat) && mat[0]?.uniforms?.uTime) {
-      console.log("entered first if");
       mat[0].uniforms.uTime.value = clock.elapsedTime;
     } else if (mat?.uniforms?.uTime) {
-      console.log("entered else if");
       mat.uniforms.uTime.value = clock.elapsedTime;
     }
   });

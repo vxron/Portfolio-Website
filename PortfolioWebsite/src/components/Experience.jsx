@@ -39,7 +39,6 @@ import { VFXParticles } from "./VFXParticles";
 import { VFXEmitter } from "./VFXEmitter";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { Fireworks } from "./Fireworks";
-import { FireworksUI } from "./FireWorksUI";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -392,7 +391,6 @@ export const Experience = () => {
           {/*ref={tinkerbellRef}
             setDirection={setDirection} // pass setter to child
             direction={direction}*/}
-          <FireworksUI></FireworksUI>
           <Fireworks></Fireworks>
           <TinkerbellController
             ref={tinkerbellRef}
