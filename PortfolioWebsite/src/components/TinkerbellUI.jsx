@@ -1,15 +1,36 @@
-import { useRef, useState, forwardRef, useImperativeHandle } from "react";
+import {
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useMemo,
+} from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Tinkerbell } from "./Tinkerbell";
 import { useMobile } from "../hooks/useMobile";
 import { useControls } from "leva";
 import { SimpleTrail } from "./SimpleTrail";
 import * as THREE from "three";
+import { VFXEmitter } from "./VFXEmitter";
+import { VFXParticles } from "./VFXParticles";
+import { useTexture } from "@react-three/drei";
+import { useEffect } from "react";
+import { InstancedMesh, Object3D } from "three";
+
+const dummy = new Object3D();
 
 export const TinkerbellController = forwardRef((props, ref) => {
   const tinkerRef = useRef();
   const trailAnchorRef = useRef();
-  useImperativeHandle(ref, () => trailAnchorRef.current);
+  const debugRef = useRef();
+  const emitterRed = useRef();
+  const alphaMap = useTexture("textures/Particles/symbol_02.png");
+  const count = 50; // number of sparkles
+  const instancedRef = useRef();
+  useImperativeHandle(ref, () => ({
+    tinker: tinkerRef.current,
+    debug: debugRef.current, // ⬅️ expose debug mesh for following
+  }));
   const { viewport } = useThree();
   const { isMobile } = useMobile();
 
@@ -123,11 +144,66 @@ export const TinkerbellController = forwardRef((props, ref) => {
       prevY.current = newY;
       prevZ.current = newZ;
     }
+    if (!instancedRef.current) return;
+    const t = clock.getElapsedTime();
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2;
+      const radius = 0.6;
+
+      dummy.position.set(
+        Math.cos(angle) * radius,
+        // LOWER vertical offset: subtract something like 0.4
+        Math.sin(angle * 2) * 0.5 - 0.4,
+        Math.sin(angle) * radius
+      );
+
+      // Animate sparkle scale to flicker
+      const flicker = 0.1 + 0.05 * Math.abs(Math.sin(t * 4 + i)); // 0.05-0.1 range
+      dummy.scale.setScalar(flicker);
+
+      dummy.updateMatrix();
+      instancedRef.current.setMatrixAt(i, dummy.matrix);
+    }
+    instancedRef.current.instanceMatrix.needsUpdate = true;
   });
+
+  {
+    /*useEffect(() => {
+    if (!instancedRef.current) return;
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 0.1 + Math.random() * 0.7;
+      dummy.position.set(
+        Math.cos(angle) * radius,
+        Math.random() * 1 - 0.5,
+        Math.sin(angle) * radius
+      );
+      dummy.scale.setScalar(Math.random() * 0.02 + 0.2);
+      dummy.updateMatrix();
+      instancedRef.current.setMatrixAt(i, dummy.matrix);
+    }
+    instancedRef.current.instanceMatrix.needsUpdate = true;
+  }, []);*/
+  }
 
   return (
     <group ref={tinkerRef} {...props}>
+      <instancedMesh ref={instancedRef} args={[null, null, count]}>
+        <sphereGeometry args={[0.1, 8, 8]} />
+        <meshStandardMaterial color="yellow" emissive="yellow" />
+      </instancedMesh>
+      {/* DEBUG: Add a small box at tinkerRef's origin */}
+      <mesh ref={debugRef}>
+        <boxGeometry args={[0.1, 0.1, 0.1]} />
+        <meshBasicMaterial color="hotpink" wireframe />
+      </mesh>
       <group name="trailAnchor">
+        {/* DEBUG: Add a small box at trailAnchor's origin */}
+        <mesh>
+          <boxGeometry args={[0.05, 0.05, 0.05]} />
+          <meshBasicMaterial color="yellow" wireframe />
+        </mesh>
+
         <Tinkerbell ref={trailAnchorRef} scale={0.002} />
       </group>
     </group>

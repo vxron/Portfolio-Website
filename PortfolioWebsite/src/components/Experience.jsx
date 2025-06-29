@@ -61,6 +61,7 @@ export const Experience = () => {
 
   const titleRef = useRef();
   const tinkerbellRef = useRef();
+
   const [direction, setDirection] = useState(1); // shared direction
 
   //const setGlobalSection = useSectionState((state) => state.setSection);
@@ -87,9 +88,9 @@ export const Experience = () => {
     emitterRed.current.position.y = Math.cos(time * 3) * 1.5;
     emitterRed.current.position.z = Math.sin(time * 4) * 1.5;
 
-    emitterBlue.current.position.x = Math.cos(time * 6) * 1.5;
-    emitterBlue.current.position.y = Math.sin(time * 3) * 1.5;
-    emitterBlue.current.position.z = Math.cos(time * 4) * 1.5;
+    //emitterBlue.current.position.x = Math.cos(time * 6) * 1.5;
+    //emitterBlue.current.position.y = Math.sin(time * 3) * 1.5;
+    //emitterBlue.current.position.z = Math.cos(time * 4) * 1.5;
 
     // separate logic for mobile experience for horizontal scrolling
     if (isMobile) {
@@ -166,6 +167,25 @@ export const Experience = () => {
           */
       });
     }
+    // Make sure refs exist
+    if (tinkerbellRef.current?.tinker && emitterBlue.current) {
+      // Copy Tinkerbell's position to your VFXParticles
+      const debug = tinkerbellRef.current.debug;
+
+      debug.updateMatrixWorld(true);
+      const worldPos = new THREE.Vector3();
+      debug.getWorldPosition(worldPos);
+
+      //emitterBlue.current.position.copy(worldPos);
+      // DEBUG: Print positions to console
+      console.log(
+        `[Frame ${Math.round(clock.elapsedTime * 60)}]`,
+        "Tinkerbell debug world pos:",
+        worldPos.toArray(),
+        "EmitterBlue pos:",
+        emitterBlue.current.position.toArray()
+      );
+    }
   });
 
   // Event listener for top bar menu
@@ -198,7 +218,21 @@ export const Experience = () => {
       box.getSize(size);
       console.log("Measured dimensions:", size);
     }
-  }, []);
+
+    if (tinkerbellRef.current?.debug) {
+      const dummy = new THREE.Mesh(
+        new THREE.BoxGeometry(0.1, 0.1, 0.1),
+        new THREE.MeshBasicMaterial({ color: "red" })
+      );
+      //tinkerbellRef.current.debug.add(dummy);
+      //dummy.position.set(0, 0, 0);
+    }
+
+    if (tinkerbellRef.current?.debug && emitterBlue.current) {
+      tinkerbellRef.current.debug.add(emitterBlue.current);
+      emitterBlue.current.position.set(0, 0, 0);
+    }
+  }, [tinkerbellRef, emitterBlue]);
 
   return (
     <>
@@ -391,7 +425,34 @@ export const Experience = () => {
           {/*ref={tinkerbellRef}
             setDirection={setDirection} // pass setter to child
             direction={direction}*/}
-          <Fireworks></Fireworks>
+          <VFXParticles
+            name="firework-particles"
+            position={[10, 1.3, 0]}
+            alphaMap={alphaMap}
+            settings={{
+              nbParticles: 100000,
+              renderMode: "billboard",
+              intensity: 1.5,
+              fadeSize: [0, 0],
+              fadeAlpha: [0, 1],
+            }}
+          />
+          <VFXEmitter
+            emitter="firework-particles"
+            settings={{
+              nbParticles: 8000,
+              colorStart: ["darkpink", "lightpink"],
+              colorEnd: "#DA70D6",
+              size: [0.01, 0.4],
+              startPositionMin: [0, 0, 0],
+              startPositionMax: [0, 0, 0],
+              directionMin: [-0.5, 0, -0.5],
+              directionMax: [1, 1, 1],
+              speed: [1, 10],
+              loop: true,
+              lifetime: [1, 3],
+            }}
+          />
           <TinkerbellController
             ref={tinkerbellRef}
             position-z={-12}
@@ -414,7 +475,6 @@ export const Experience = () => {
               fadeAlpha: [0, 1],
             }}
           ></VFXParticles>
-          {/*<VFXEmitter emitter="sparks"></VFXEmitter>*/}
           <VFXEmitter
             ref={emitterRed}
             emitter="sparks"

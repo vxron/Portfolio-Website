@@ -1,3 +1,5 @@
+// THIS METHOD PROB WON'T WORK LOL
+
 import { useFireworks } from "../hooks/useFireworks";
 
 export const FireworksUI = () => {

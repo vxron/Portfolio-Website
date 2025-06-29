@@ -21,15 +21,11 @@ export const Cursor = ({ tinkerRef }) => {
   // reference for animation
   const target = useRef();
   useFrame((_, delta) => {
-    console.log(
-      "Following world pos of:",
-      tinkerRef.current.name,
-      tinkerRef.current.position
-    );
-    if (tinkerRef.current && target.current) {
+    if (tinkerRef.current?.tinker && target.current) {
+      const tinker = tinkerRef.current.debug;
       // Get Tinkerbell's world position
-      tinkerRef.current.updateMatrixWorld(true);
-      tinkerRef.current.getWorldPosition(tmpVec);
+      tinker.updateMatrixWorld(true);
+      tinker.getWorldPosition(tmpVec);
 
       //tmpVec.x += 3.5; // Try increasing/decreasing this
       //tmpVec.y += 1;
