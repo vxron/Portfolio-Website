@@ -17,21 +17,13 @@ import { useTexture } from "@react-three/drei";
 import { useEffect } from "react";
 import { InstancedMesh, Object3D } from "three";
 
-const dummy = new Object3D();
-
 export const TinkerbellController = forwardRef((props, ref) => {
   const tinkerRef = useRef();
   const trailAnchorRef = useRef();
-  const debugRef = useRef();
-  const emitterRed = useRef();
-  const alphaMap = useTexture("textures/Particles/symbol_02.png");
   const count = 50; // number of sparkles
-  const instancedRef = useRef();
   useImperativeHandle(ref, () => ({
     tinker: tinkerRef.current,
-    debug: debugRef.current, // ⬅️ expose debug mesh for following
   }));
-  const { viewport } = useThree();
   const { isMobile } = useMobile();
 
   // Direction: 1 = moving in fwd dir, -1 = moving in negative dir
@@ -48,21 +40,23 @@ export const TinkerbellController = forwardRef((props, ref) => {
   const rotationDuration = 0.4; // seconds
   const animationStartTime = useRef(null); // for rotation animation
 
-  // TODO: find way to make her not overlap w avatar
   useFrame(({ clock }) => {
-    const zAmp = isMobile ? 2.8 : 0.8;
-    const yAmp = 2.8;
-    const xAmp = 5;
-    const xFreq = 1; // angular frequencies (omega)
-    const yFreq = 2;
-    const zFreq = 2;
-    const speed = 0.4; // speed factor (0.5 = half speed)
+    const zAmp = isMobile ? 0.6 : 0.1;
+    const yAmp = isMobile ? 2.8 : 1.8;
+    const xAmp = isMobile ? 7 : 1.3;
+    const xFreq = isMobile ? 1 : 2; // angular frequencies (omega)
+    const yFreq = isMobile ? 2 : 1;
+    const zFreq = isMobile ? 2 : 0.1;
+    const zOffset = 0;
+    const yOffset = isMobile ? 0 : 1;
+    const xOffset = isMobile ? 0 : -1.85;
+    const speed = isMobile ? 0.45 : 0.5; // speed factor (0.5 = half speed)
     const elapsed = clock.getElapsedTime() * speed;
 
     // Offset slightly so no two are perfectly in sync
-    const newX = Math.sin(elapsed * xFreq + 1.2) * xAmp;
-    const newY = Math.sin(elapsed * yFreq + 0.4) * yAmp;
-    const newZ = Math.sin(elapsed * zFreq - 0.7) * zAmp;
+    const newX = Math.sin(elapsed * xFreq + 1.2) * xAmp + xOffset;
+    const newY = Math.sin(elapsed * yFreq + 0.4) * yAmp + yOffset;
+    const newZ = Math.sin(elapsed * zFreq - 0.7) * zAmp + zOffset;
 
     if (tinkerRef.current) {
       // Build trajectories
@@ -87,14 +81,19 @@ export const TinkerbellController = forwardRef((props, ref) => {
         // Set target rotation lerp endpoints based on current direction triplets
         const key = `${currentXDirection}${currentYDirection}${currentZDirection}`;
         switch (key) {
+          // Entirely forward facing
           case "111":
-            endRotation.current.set(Math.PI / 12, 0, -Math.PI / 16);
+            endRotation.current.set(
+              Math.PI / 15, // leg tilt
+              0.3 * Math.PI, // multiplier controls how close to fully facing fwd we want to allow her
+              -Math.PI / 16
+            );
             break;
           case "1-11":
             endRotation.current.set(-Math.PI / 12, 0, -Math.PI / 20);
             break;
           case "-111":
-            endRotation.current.set(Math.PI / 12, Math.PI, Math.PI / 16);
+            endRotation.current.set(Math.PI / 12, 0.9 * Math.PI, Math.PI / 16);
             break;
           case "-1-11":
             endRotation.current.set(-Math.PI / 12, Math.PI, Math.PI / 20);
@@ -106,10 +105,14 @@ export const TinkerbellController = forwardRef((props, ref) => {
             endRotation.current.set(-Math.PI / 16, 0, Math.PI / 16);
             break;
           case "-11-1":
-            endRotation.current.set(Math.PI / 20, Math.PI, -Math.PI / 20);
+            endRotation.current.set(Math.PI / 20, 0.9 * Math.PI, -Math.PI / 20);
             break;
           case "-1-1-1":
-            endRotation.current.set(-Math.PI / 20, Math.PI, -Math.PI / 16);
+            endRotation.current.set(
+              -Math.PI / 20,
+              0.9 * Math.PI,
+              -Math.PI / 16
+            );
             break;
           default:
             endRotation.current.set(0, 0, 0);
@@ -144,67 +147,12 @@ export const TinkerbellController = forwardRef((props, ref) => {
       prevY.current = newY;
       prevZ.current = newZ;
     }
-    if (!instancedRef.current) return;
-    const t = clock.getElapsedTime();
-    for (let i = 0; i < count; i++) {
-      const angle = (i / count) * Math.PI * 2;
-      const radius = 0.6;
-
-      dummy.position.set(
-        Math.cos(angle) * radius,
-        // LOWER vertical offset: subtract something like 0.4
-        Math.sin(angle * 2) * 0.5 - 0.4,
-        Math.sin(angle) * radius
-      );
-
-      // Animate sparkle scale to flicker
-      const flicker = 0.1 + 0.05 * Math.abs(Math.sin(t * 4 + i)); // 0.05-0.1 range
-      dummy.scale.setScalar(flicker);
-
-      dummy.updateMatrix();
-      instancedRef.current.setMatrixAt(i, dummy.matrix);
-    }
-    instancedRef.current.instanceMatrix.needsUpdate = true;
   });
-
-  {
-    /*useEffect(() => {
-    if (!instancedRef.current) return;
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const radius = 0.1 + Math.random() * 0.7;
-      dummy.position.set(
-        Math.cos(angle) * radius,
-        Math.random() * 1 - 0.5,
-        Math.sin(angle) * radius
-      );
-      dummy.scale.setScalar(Math.random() * 0.02 + 0.2);
-      dummy.updateMatrix();
-      instancedRef.current.setMatrixAt(i, dummy.matrix);
-    }
-    instancedRef.current.instanceMatrix.needsUpdate = true;
-  }, []);*/
-  }
 
   return (
     <group ref={tinkerRef} {...props}>
-      <instancedMesh ref={instancedRef} args={[null, null, count]}>
-        <sphereGeometry args={[0.1, 8, 8]} />
-        <meshStandardMaterial color="yellow" emissive="yellow" />
-      </instancedMesh>
-      {/* DEBUG: Add a small box at tinkerRef's origin */}
-      <mesh ref={debugRef}>
-        <boxGeometry args={[0.1, 0.1, 0.1]} />
-        <meshBasicMaterial color="hotpink" wireframe />
-      </mesh>
       <group name="trailAnchor">
-        {/* DEBUG: Add a small box at trailAnchor's origin */}
-        <mesh>
-          <boxGeometry args={[0.05, 0.05, 0.05]} />
-          <meshBasicMaterial color="yellow" wireframe />
-        </mesh>
-
-        <Tinkerbell ref={trailAnchorRef} scale={0.002} />
+        <Tinkerbell ref={trailAnchorRef} scale={isMobile ? 0.002 : 0.0013} />
       </group>
     </group>
   );

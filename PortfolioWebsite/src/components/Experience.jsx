@@ -88,9 +88,9 @@ export const Experience = () => {
     emitterRed.current.position.y = Math.cos(time * 3) * 1.5;
     emitterRed.current.position.z = Math.sin(time * 4) * 1.5;
 
-    //emitterBlue.current.position.x = Math.cos(time * 6) * 1.5;
-    //emitterBlue.current.position.y = Math.sin(time * 3) * 1.5;
-    //emitterBlue.current.position.z = Math.cos(time * 4) * 1.5;
+    emitterBlue.current.position.x = Math.cos(time * 6) * 1.5;
+    emitterBlue.current.position.y = Math.sin(time * 3) * 1.5;
+    emitterBlue.current.position.z = Math.cos(time * 4) * 1.5;
 
     // separate logic for mobile experience for horizontal scrolling
     if (isMobile) {
@@ -166,25 +166,6 @@ export const Experience = () => {
         }
           */
       });
-    }
-    // Make sure refs exist
-    if (tinkerbellRef.current?.tinker && emitterBlue.current) {
-      // Copy Tinkerbell's position to your VFXParticles
-      const debug = tinkerbellRef.current.debug;
-
-      debug.updateMatrixWorld(true);
-      const worldPos = new THREE.Vector3();
-      debug.getWorldPosition(worldPos);
-
-      //emitterBlue.current.position.copy(worldPos);
-      // DEBUG: Print positions to console
-      console.log(
-        `[Frame ${Math.round(clock.elapsedTime * 60)}]`,
-        "Tinkerbell debug world pos:",
-        worldPos.toArray(),
-        "EmitterBlue pos:",
-        emitterBlue.current.position.toArray()
-      );
     }
   });
 
@@ -420,51 +401,19 @@ export const Experience = () => {
           rotation-y={Math.PI / 5}
           name="contact"
         >
-          <Cursor tinkerRef={tinkerbellRef}></Cursor>
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
-          {/*ref={tinkerbellRef}
-            setDirection={setDirection} // pass setter to child
-            direction={direction}*/}
-          <VFXParticles
-            name="firework-particles"
-            position={[10, 1.3, 0]}
-            alphaMap={alphaMap}
-            settings={{
-              nbParticles: 100000,
-              renderMode: "billboard",
-              intensity: 1.5,
-              fadeSize: [0, 0],
-              fadeAlpha: [0, 1],
-            }}
-          />
-          <VFXEmitter
-            emitter="firework-particles"
-            settings={{
-              nbParticles: 8000,
-              colorStart: ["darkpink", "lightpink"],
-              colorEnd: "#DA70D6",
-              size: [0.01, 0.4],
-              startPositionMin: [0, 0, 0],
-              startPositionMax: [0, 0, 0],
-              directionMin: [-0.5, 0, -0.5],
-              directionMax: [1, 1, 1],
-              speed: [1, 10],
-              loop: true,
-              lifetime: [1, 3],
-            }}
-          />
           <TinkerbellController
             ref={tinkerbellRef}
             position-z={-12}
-            position-y={1}
-            position-x={isMobile ? 10 : 0}
+            position-y={isMobile ? 1 : 4.5}
+            position-x={isMobile ? 10 : -20}
             rotation-y={Math.PI / 15}
             rotation-x={Math.PI / 9}
             rotation-z={-Math.PI / 25}
           ></TinkerbellController>
           {/*<PixieDust />*/}
           <VFXParticles
-            position={[6, -2, 0]}
+            position={isMobile ? [6, -2, 0] : [0, 0, -3]}
             name="sparks"
             alphaMap={alphaMap}
             settings={{
@@ -480,11 +429,11 @@ export const Experience = () => {
             emitter="sparks"
             settings={{
               nbParticles: 5000,
-              colorStart: ["yellowgreen", "palegreen"],
+              colorStart: ["pink", "palegreen"],
               colorEnd: "#DA70D6",
-              size: [0.02, 0.2],
-              startPositionMin: [0, 0, 0],
-              startPositionMax: [0, 0, 0],
+              size: [0.02, 0.3],
+              startPositionMin: [0, 3, 0],
+              startPositionMax: [0, 3, 0],
               directionMin: [-0.5, 0, -0.5],
               directionMax: [0.5, 1, 0.5],
               speed: [1, 5],
@@ -499,14 +448,14 @@ export const Experience = () => {
             settings={{
               nbParticles: 8000,
               colorStart: ["palegoldenrod", "palegreen"],
-              size: [0.1, 0.9],
+              size: [0.05, 0.4],
               startPositionMin: [0, 0, 0],
               startPositionMax: [0, 0, 0],
               directionMin: [-0.5, 0, -0.5],
               directionMax: [0.5, 1, 0.5],
               speed: [1, 5],
               loop: true,
-              lifetime: [3, 10],
+              lifetime: [3, 6],
             }}
           />
         </group>
