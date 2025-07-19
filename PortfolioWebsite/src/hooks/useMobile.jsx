@@ -9,7 +9,7 @@ useMobile hook:
 import { useEffect, useState } from "react";
 
 const REFERENCE_WIDTH = 1920; // Typical Screen Size
-const MOBILE_THRESHOLD = 990; // Switch to mobile view (or portrait tablets)
+const MOBILE_THRESHOLD = 900; // Switch to mobile view (or portrait tablets)
 
 export const useMobile = () => {
   const [scaleFactor, setScaleFactor] = useState(

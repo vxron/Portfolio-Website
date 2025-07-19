@@ -84,12 +84,20 @@ export const Experience = () => {
   useFrame(({ clock }) => {
     const time = clock.elapsedTime;
     // update VFX particles position
-    emitterRed.current.position.x = Math.sin(time * 6) * 1.5;
-    emitterRed.current.position.y = Math.cos(time * 3) * 1.5;
+    emitterRed.current.position.x = isMobile
+      ? Math.sin(time * 6) * 2.5
+      : Math.sin(time * 6) * 1.5;
+    emitterRed.current.position.y = isMobile
+      ? Math.cos(time * 3) * 2.6
+      : Math.cos(time * 3) * 1.7;
     emitterRed.current.position.z = Math.sin(time * 4) * 1.5;
 
-    emitterBlue.current.position.x = Math.cos(time * 6) * 1.5;
-    emitterBlue.current.position.y = Math.sin(time * 3) * 1.5;
+    emitterBlue.current.position.x = isMobile
+      ? Math.cos(time * 6) * 2.5
+      : Math.cos(time * 6) * 1.5;
+    emitterBlue.current.position.y = isMobile
+      ? Math.sin(time * 3) * 2.5
+      : Math.sin(time * 3) * 1.6;
     emitterBlue.current.position.z = Math.cos(time * 4) * 1.5;
 
     // separate logic for mobile experience for horizontal scrolling
@@ -402,16 +410,17 @@ export const Experience = () => {
           name="contact"
         >
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
-          <TinkerbellController
-            ref={tinkerbellRef}
-            position-z={-12}
-            position-y={isMobile ? 1 : 4.5}
-            position-x={isMobile ? 10 : -20}
-            rotation-y={Math.PI / 15}
-            rotation-x={Math.PI / 9}
-            rotation-z={-Math.PI / 25}
-          ></TinkerbellController>
-          {/*<PixieDust />*/}
+          {!isMobile ? (
+            <TinkerbellController
+              ref={tinkerbellRef}
+              position-z={-12}
+              position-y={isMobile ? 1 : 4.5}
+              position-x={isMobile ? 10 : -18}
+              rotation-y={Math.PI / 15}
+              rotation-x={Math.PI / 9}
+              rotation-z={-Math.PI / 25}
+            ></TinkerbellController>
+          ) : null}
           <VFXParticles
             position={isMobile ? [6, -2, 0] : [0, 0, -3]}
             name="sparks"
@@ -429,33 +438,33 @@ export const Experience = () => {
             emitter="sparks"
             settings={{
               nbParticles: 5000,
-              colorStart: ["pink", "palegreen"],
+              colorStart: ["pink", "#ff99cc"],
               colorEnd: "#DA70D6",
-              size: [0.02, 0.3],
-              startPositionMin: [0, 3, 0],
-              startPositionMax: [0, 3, 0],
+              size: isMobile ? [0.05, 0.5] : [0.02, 0.22],
+              startPositionMin: isMobile ? [8, 6, 0] : [1, 3, 0],
+              startPositionMax: isMobile ? [8, 6, 0] : [1, 3, 0],
               directionMin: [-0.5, 0, -0.5],
               directionMax: [0.5, 1, 0.5],
-              speed: [1, 5],
+              speed: [0.9, 3],
               loop: true,
-              lifetime: [1, 3],
+              lifetime: isMobile ? [0.8, 2.6] : [0.8, 2.2],
             }}
           />
           <VFXEmitter
-            debug
             ref={emitterBlue}
             emitter="sparks"
             settings={{
               nbParticles: 8000,
-              colorStart: ["palegoldenrod", "palegreen"],
-              size: [0.05, 0.4],
-              startPositionMin: [0, 0, 0],
-              startPositionMax: [0, 0, 0],
+              colorStart: ["#eb16af", "#ffa9ed"],
+              startPositionMin: isMobile ? [7, 4, 0] : [1.2, 1.5, 0],
+              startPositionMax: isMobile ? [7, 4, 0] : [1, 1.4, 0],
               directionMin: [-0.5, 0, -0.5],
               directionMax: [0.5, 1, 0.5],
-              speed: [1, 5],
+              particlesLifetime: [0.1, 2.7],
+              speed: [0.9, 3],
+              size: isMobile ? [0.05, 0.5] : [0.05, 0.22],
               loop: true,
-              lifetime: [3, 6],
+              lifetime: isMobile ? [0.8, 2.6] : [0.8, 2.2],
             }}
           />
         </group>

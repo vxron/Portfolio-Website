@@ -4,14 +4,16 @@ import { button, folder, useControls } from "leva";
 import { useEffect, useRef } from "react";
 
 export const VFXBuilderEmitter = ({ settings, onChange, onRestart }) => {
-  useControls("Emitter Settings", {
-    Restart: button(() => onRestart()),
-    Export: button(() => {
-      const exportValues = JSON.stringify(vfxSettingsClone.current);
-      console.log("Values saved to clipboard: ", exportValues);
-      navigator.clipboard.writeText(exportValues);
-    }),
-  });
+  if (import.meta.env.DEV) {
+    useControls("Emitter Settings", {
+      Restart: button(() => onRestart()),
+      Export: button(() => {
+        const exportValues = JSON.stringify(vfxSettingsClone.current);
+        console.log("Values saved to clipboard: ", exportValues);
+        navigator.clipboard.writeText(exportValues);
+      }),
+    });
+  }
 
   const [{ ...vfxSettings }, set] = useControls(() => ({
     "🪄 Emitter": folder({

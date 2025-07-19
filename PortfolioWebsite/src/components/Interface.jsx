@@ -188,6 +188,17 @@ export const Interface = () => {
             initial={{ opacity: 0 }}
             variants={{ visible: { opacity: 1 } }}
           >
+            {/* Resume Button */}
+            <div className="resume_button_wrapper">
+              <a
+                href="pdfs/resume_jan_2025.pdf" // <-- Replace with actual path to your PDF
+                target="_blank"
+                rel="noopener noreferrer"
+                className="resume_button"
+              >
+                View My Resume!
+              </a>
+            </div>
             {/* Left Side: Contact Info List */}
             <div className="contact_div">
               <ul className="contact_ul">
@@ -224,6 +235,22 @@ export const Interface = () => {
               </ul>
             </div>
           </motion.div>
+          {!isMobile ? (
+            <div className="contact_footer">
+              <p>
+                This site was coded from scratch using HTML/CSS/JS, and React
+                Three Fiber.{" "}
+              </p>
+              <a
+                href="https://github.com/vxron/Portfolio-Website"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer_link"
+              >
+                View on GitHub →
+              </a>
+            </div>
+          ) : null}
         </section>
       </div>
     </div>

@@ -1,10 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
-* {
-  outline: 1px solid red;
-}
-
 :root {
   --watermelon-pink: #e37383;
   --dark-watermelon-pink: #dd5569;
@@ -21,6 +17,11 @@
   --popup-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   --btn-hover-bg: #f5c6d4;
   --btn-text-color: #dd5569;
+  font-size: clamp(
+    15px,
+    1.5vw,
+    16px
+  ); /* where the rem unit pulls its reference */
 }
 
 #root {
@@ -74,9 +75,8 @@ a {
 
 .section--right {
   justify-content: flex-end;
-  border: 3px solid green;
-  max-height: 100%;
   align-items: center; /* CHECK IF THIS VERT ALIGNS SKILLS */
+  display: flex;
 }
 
 .section--left {
@@ -145,15 +145,6 @@ a {
 
 /* HOME SECTION */
 
-/* TODO: DELETE THIS ELEMENT, JUST USEFUL FOR DEBUGGING FOR NOW BUT NOT NEEDED AS WRAPPER FR */
-.element-container {
-  /*background-color: red;*/
-  opacity: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .scroll-down {
   width: 28px;
   height: 42px;
@@ -174,16 +165,30 @@ a {
 
 /* SKILLS SECTION */
 
+@media (min-width: 900px) {
+  .skills_div {
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .skills_div {
+    margin-top: auto;
+    margin-bottom: 2rem;
+  }
+}
+
 .skills_div {
   padding: 1rem;
   margin-right: 9%;
-  outline: 3px solid purple;
   max-width: 40%; /* should only be if not mobile */
   max-height: 83%;
   overflow: hidden;
   overflow-y: scroll;
   overscroll-behavior: contain; /* do we like this? */
   border-radius: 4px;
+  outline: 1px solid var(--watermelon-pink);
 }
 
 .skills_div::-webkit-scrollbar-thumb {
@@ -247,13 +252,20 @@ a {
 
 /* PROJECTS SECTION */
 
+@media (max-width: 900px) {
+  .projects_div {
+    margin-top: auto;
+    margin-bottom: 2rem;
+  }
+}
+
 .projects_div {
-  outline: 3px solid purple;
+  outline: 1px solid var(--watermelon-pink);
   padding: 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   width: 750px;
-  max-width: 60%;
+  max-width: 55%;
   max-height: 78%;
   justify-content: center;
   gap: 1rem;
@@ -338,7 +350,7 @@ a {
   min-width: unset;
   position: relative;
   z-index: 1;
-  overflow: hidden;
+  overflow: visible;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 1px solid rgba(255, 192, 203, 0.3);
   backdrop-filter: blur(4px);
@@ -346,7 +358,9 @@ a {
   align-items: center;
   justify-content: center;
   display: flex;
+  flex-direction: column;
   font-size: 0.9rem;
+  bottom: 3rem;
 }
 
 /* 'Before' used to get around Framer Motion for gradient effect */
@@ -363,20 +377,23 @@ a {
   min-width: unset;
   background: linear-gradient(
     135deg,
-    #ffe6f0,
-    /* soft blush */ #f7c0d7,
-    /* watermelon-pink with less saturation */ #e9c9e6,
-    /* pink-lavender blend */ #ffe6f0
+    #fff0f5,
+    /* lavender blush (very pale pink) */ #ffe6f0,
+    /* soft baby pink */ #fcd6e5,
+    /* light blush pink */ #f3e0ec,
+    /* pale pink-lavender mix */ #fff0f5 /* loop back to lavender blush */
   );
   background-size: 300% 300%;
   animation: princessGradient 12s ease-in-out infinite;
   opacity: 1;
+  border: 2px solid #ff99cc; /* same as resume_button */
 }
 
 .contact_div {
   width: 100%;
   max-width: 400px;
   padding: 0.5rem;
+  margin-top: 0.4rem; /* shift list items up/down */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -427,7 +444,7 @@ a {
 }
 
 .contact_icon {
-  color: var(--dark-watermelon-pink);
+  color: #d94f8c; /* deep rose pink */
   flex-shrink: 0;
 }
 
@@ -439,15 +456,84 @@ a {
 }
 
 /* Position contact div at ~65% height of viewport */
-@media (min-width: 991px) {
+@media (min-width: 901px) {
   .section--right {
     align-items: flex-start;
   }
 
   .contact {
-    margin-top: calc(75vh - 33%); /* approximate vertical offset */
-    margin-right: calc(10vw);
+    margin-top: calc(75vh - 22rem); /* approximate vertical offset */
+    margin-right: calc(7vw);
   }
+  .contact_footer {
+    margin-right: calc(7vw);
+  }
+}
+
+/* Separate container for button with own background */
+.resume_button_wrapper {
+  background: #fef8ff;
+  padding: 0.2rem 0.2rem;
+  margin: 0 auto;
+  margin-top: -2rem;
+  border-radius: 12px;
+  border: 2px solid #ff99cc;
+  box-shadow: 0 0 20px rgba(218, 112, 214, 0.2);
+}
+
+.resume_button {
+  padding: 0.95rem 1.5rem;
+  display: inline-block;
+  font-weight: 600;
+  border-radius: 12px;
+  background: white;
+  color: #e75480;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px #ff99cc88;
+}
+
+/* Hover effect */
+.resume_button:hover {
+  background: #ff8cbf;
+  color: #fff0f5 !important;
+  box-shadow: 0 0 20px #ff99cc, 0 0 30px #ff99ccaa;
+}
+
+.contact_footer {
+  position: absolute;
+  width: 100%;
+  bottom: 2rem;
+  font-size: 0.65rem;
+  background: rgba(255, 240, 245, 0.7);
+  padding: 0.7rem 0.75rem;
+  border-radius: 8px;
+  color: black;
+  max-width: 240px;
+  text-align: right;
+  z-index: 10;
+  border: 1px solid #ff99cc;
+}
+
+@media (max-width: 900px) {
+  .contact_footer {
+    margin-bottom: 39rem;
+    margin-right: 2rem;
+  }
+  .contact {
+    margin-right: 2rem;
+    margin-bottom: 0rem;
+  }
+}
+
+/* make the link inherit the pink style */
+.footer_link {
+  display: inline-block;
+  margin-top: 0;
+  margin-bottom: 0.4rem;
+  color: #d94f8c;
+  font-weight: 500;
+  text-decoration: underline;
 }
 
 /* MENU BAR */
@@ -480,8 +566,6 @@ a {
   color: var(--watermelon-pink);
   cursor: pointer;
 }
-
-/* LOADING SCREEN */
 
 /* LOADING SCREEN */
 
@@ -544,9 +628,9 @@ a {
 }
 
 /* RESPONSIVE */
-/* Media Query For HTML Responsiveness, Targetting 990px threshold */
+/* Media Query For HTML Responsiveness, Targetting 900px threshold */
 
-@media (max-width: 990px) {
+@media (max-width: 900px) {
   .mobile--section--top {
     align-items: flex-start;
   }

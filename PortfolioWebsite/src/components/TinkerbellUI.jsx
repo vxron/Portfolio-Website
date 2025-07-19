@@ -8,7 +8,6 @@ import {
 import { useFrame, useThree } from "@react-three/fiber";
 import { Tinkerbell } from "./Tinkerbell";
 import { useMobile } from "../hooks/useMobile";
-import { useControls } from "leva";
 import { SimpleTrail } from "./SimpleTrail";
 import * as THREE from "three";
 import { VFXEmitter } from "./VFXEmitter";
@@ -42,8 +41,8 @@ export const TinkerbellController = forwardRef((props, ref) => {
 
   useFrame(({ clock }) => {
     const zAmp = isMobile ? 0.6 : 0.1;
-    const yAmp = isMobile ? 2.8 : 1.8;
-    const xAmp = isMobile ? 7 : 1.3;
+    const yAmp = isMobile ? 2.8 : 1.7;
+    const xAmp = isMobile ? 7 : 1.1;
     const xFreq = isMobile ? 1 : 2; // angular frequencies (omega)
     const yFreq = isMobile ? 2 : 1;
     const zFreq = isMobile ? 2 : 0.1;
@@ -152,7 +151,7 @@ export const TinkerbellController = forwardRef((props, ref) => {
   return (
     <group ref={tinkerRef} {...props}>
       <group name="trailAnchor">
-        <Tinkerbell ref={trailAnchorRef} scale={isMobile ? 0.002 : 0.0013} />
+        <Tinkerbell ref={trailAnchorRef} scale={isMobile ? 0.002 : 0.001} />
       </group>
     </group>
   );

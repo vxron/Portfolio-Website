@@ -3,7 +3,6 @@
 // FIX ALL THIS LOGIC BY WATCIHNG END OF WIZARD GAME VID
 
 import { useFrame } from "@react-three/fiber";
-import { useControls } from "leva";
 import { useRef } from "react";
 import { SimpleTrail } from "./SimpleTrail";
 import * as THREE from "three";
@@ -12,12 +11,6 @@ import * as THREE from "three";
 const tmpVec = new THREE.Vector3();
 
 export const Cursor = ({ tinkerRef }) => {
-  const { color, intensity, opacity, size } = useControls("Cursor", {
-    size: { value: 0.2, min: 0.1, max: 3, step: 0.01 },
-    color: "#dfbcff",
-    intensity: { value: 4.6, min: 1, max: 10, step: 0.1 },
-    opacity: { value: 0.5, min: 0, max: 1, step: 0.01 },
-  });
   // reference for animation
   const target = useRef();
   useFrame((_, delta) => {

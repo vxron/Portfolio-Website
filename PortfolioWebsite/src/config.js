@@ -135,7 +135,7 @@ export const config = {
       name: "ADC module for Neural Recording",
       description: "",
       image: "projects/ADC-module.png",
-      link: "",
+      link: "pdfs/adc-module-for-neural-recording.pdf",
       tags: [],
     },
     {
@@ -150,13 +150,6 @@ export const config = {
       description: "",
       image: "projects/lactose-intolerance.png",
       link: "pdfs/lactose-intolerance.pdf",
-      tags: [],
-    },
-    {
-      name: "Mini Circuit Designs",
-      description: "",
-      image: "projects/mini-circuit-design.png",
-      link: "",
       tags: [],
     },
     {
