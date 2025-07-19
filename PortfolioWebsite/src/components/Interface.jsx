@@ -197,7 +197,7 @@ export const Interface = () => {
                 Three Fiber.{" "}
               </p>
               <a
-                href="https://github.com/vxron/Portfolio-Website"
+                href="https://github.com/vxron/portfolio-website"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="footer_link"
