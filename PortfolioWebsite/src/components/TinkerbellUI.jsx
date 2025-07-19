@@ -1,25 +1,12 @@
-import {
-  useRef,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  useMemo,
-} from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { useRef, forwardRef, useImperativeHandle } from "react";
+import { useFrame } from "@react-three/fiber";
 import { Tinkerbell } from "./Tinkerbell";
 import { useMobile } from "../hooks/useMobile";
-import { SimpleTrail } from "./SimpleTrail";
 import * as THREE from "three";
-import { VFXEmitter } from "./VFXEmitter";
-import { VFXParticles } from "./VFXParticles";
-import { useTexture } from "@react-three/drei";
-import { useEffect } from "react";
-import { InstancedMesh, Object3D } from "three";
 
 export const TinkerbellController = forwardRef((props, ref) => {
   const tinkerRef = useRef();
   const trailAnchorRef = useRef();
-  const count = 50; // number of sparkles
   useImperativeHandle(ref, () => ({
     tinker: tinkerRef.current,
   }));

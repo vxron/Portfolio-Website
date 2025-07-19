@@ -3,11 +3,8 @@ import {
   Center,
   Environment,
   useScroll,
-  ContactShadows,
   Float,
-  MeshDistortMaterial,
   RoundedBox,
-  Html,
   useTexture,
 } from "@react-three/drei";
 import { Avatar } from "./Avatar";
@@ -25,20 +22,15 @@ import { Monitor } from "./Monitor";
 import * as THREE from "three";
 //#import { motion } from "framer-motion-3d";
 import { MonitorScreen } from "./MonitorScreen";
-import { motion, MotionConfig, LayoutGroup } from "motion/react";
 //import { useSectionState } from "../States";
 //import { SectionContext } from "../States";
 import { FlipBook } from "./FlipBook";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
-import { Box3, Vector3 } from "three";
 import { TinkerbellController } from "./TinkerbellUI";
-import { Cursor } from "./Cursor";
 import { VFXParticles } from "./VFXParticles";
 import { VFXEmitter } from "./VFXEmitter";
-import { Bloom, EffectComposer } from "@react-three/postprocessing";
-import { Fireworks } from "./Fireworks";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -61,8 +53,6 @@ export const Experience = () => {
 
   const titleRef = useRef();
   const tinkerbellRef = useRef();
-
-  const [direction, setDirection] = useState(1); // shared direction
 
   //const setGlobalSection = useSectionState((state) => state.setSection);
   const emitterBlue = useRef();
@@ -117,9 +107,6 @@ export const Experience = () => {
     setSection(
       config.sections[Math.round(scrollData.offset * (scrollData.pages - 1))]
     );
-    //setGlobalSection(section);
-
-    // Update all section opacities directly without triggering re-renders
 
     // Set opacity TARGET to be 1 for current section and 0 for others
     sectionOpacity.current = Object.fromEntries(
@@ -154,25 +141,6 @@ export const Experience = () => {
           );
           child.material.transparent = true; // Ensure transparency is applied
         }
-        // Handle opacity for entire section group
-        /*
-        if (child.isGroup) {
-          // For the entire group, adjust the opacity based on section visibility
-          const groupOpacity = sectionOpacity.current[parent_section] || 0;
-          if (child.name === "experience") {
-            child.traverse((descendant) => {
-              if (descendant.material) {
-                descendant.material.opacity = THREE.MathUtils.lerp(
-                  descendant.material.opacity,
-                  groupOpacity,
-                  FADE_SPEED
-                );
-                descendant.material.transparent = true;
-              }
-            });
-          }
-        }
-          */
       });
     }
   });
@@ -198,30 +166,6 @@ export const Experience = () => {
     window.addEventListener("hashchange", handleHashChange);
     return () => window.removeEventListener("hashChange", handleHashChange);
   }, []);
-
-  // hook for getting size (dimensions) of 3D element on screen (for debugging)
-  useEffect(() => {
-    if (titleRef.current) {
-      const box = new THREE.Box3().setFromObject(titleRef.current);
-      const size = new THREE.Vector3();
-      box.getSize(size);
-      console.log("Measured dimensions:", size);
-    }
-
-    if (tinkerbellRef.current?.debug) {
-      const dummy = new THREE.Mesh(
-        new THREE.BoxGeometry(0.1, 0.1, 0.1),
-        new THREE.MeshBasicMaterial({ color: "red" })
-      );
-      //tinkerbellRef.current.debug.add(dummy);
-      //dummy.position.set(0, 0, 0);
-    }
-
-    if (tinkerbellRef.current?.debug && emitterBlue.current) {
-      tinkerbellRef.current.debug.add(emitterBlue.current);
-      emitterBlue.current.position.set(0, 0, 0);
-    }
-  }, [tinkerbellRef, emitterBlue]);
 
   return (
     <>

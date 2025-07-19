@@ -153,14 +153,6 @@ export const VFXParticles = ({
       cursor.current = cursor.current % nbParticles;
     }
 
-    // tell renderer that buffer attributes have been updated from VFXEmitter
-    /*mesh.current.instanceMatrix.needsUpdate = true;
-    instanceColor.needsUpdate = true;
-    instanceColorEnd.needsUpdate = true;
-    instanceDirection.needsUpdate = true;
-    instanceLifetime.needsUpdate = true;
-    instanceSpeed.needsUpdate = true;
-    instanceRotationSpeed.needsUpdate = true;*/
     needUpdate.current = true; // because we emitted particles
   };
   useEffect(() => {
@@ -179,7 +171,7 @@ export const VFXParticles = ({
     mesh.current.material.uniforms.uIntensity.value = intensity;
     mesh.current.material.uniforms.uFadeSize.value = fadeSize;
     mesh.current.material.uniforms.uFadeAlpha.value = fadeAlpha;
-    // Update timer --> something wrong here
+    // Update timer
     const mat = mesh.current.material;
     if (Array.isArray(mat) && mat[0]?.uniforms?.uTime) {
       mat[0].uniforms.uTime.value = clock.elapsedTime;

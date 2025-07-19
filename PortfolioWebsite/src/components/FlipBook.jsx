@@ -189,8 +189,6 @@ const Page = ({ number, front, back, page, opened, bookClosed, ...props }) => {
     return mesh; // return skinned mesh
   }, []);
 
-  //useHelper(skinnedMeshRef, SkeletonHelper, "red");
-
   useFrame(() => {
     // ensure we have current value
     if (!skinnedMeshRef.current) {
@@ -265,14 +263,9 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
 
   // Function to handle events when user clicks on book
   const handleBookClick = (page, setPage, direction = "next") => {
-    console.log("CLICK");
-
     if (!isBookOpen) {
       setIsBookOpen(true);
       setBookOpen(true); // Hide avatar and title
-      //setPage(0);
-      console.log("isBookOpen:", isBookOpen);
-      console.log("page:", page);
       return;
     }
 
@@ -300,9 +293,6 @@ export const FlipBook = ({ setBookOpen, ...props }) => {
   // Function to handle events when user clicks outside of book
   const handleBackgroundClick = (e) => {
     e.stopPropagation(); // necessary since group w handleBookClick is a child of group w handleBackgroundClick, but click on flipbook should NOT propagate to parent
-    console.log("background click");
-    console.log("isBookOpen:", isBookOpen);
-    console.log("page:", page);
     const clicked = e.object?.name;
     if (clicked === "flipbook") return;
     setPage(0);

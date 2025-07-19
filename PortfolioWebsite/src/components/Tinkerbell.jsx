@@ -3,7 +3,7 @@ import { useGLTF, useFBX, useAnimations } from "@react-three/drei";
 
 export const Tinkerbell = forwardRef((props, ref) => {
   const group = useRef();
-  // Ref to Tinkerbell's foot for trail
+  // Ref to Tinkerbell's foot for trail in future (todo)
   const footRef = useRef();
 
   // Load the model and animations

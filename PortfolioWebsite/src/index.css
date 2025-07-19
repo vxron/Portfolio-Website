@@ -12,8 +12,8 @@
   --text-light-color: #555;
   --glass-inset-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2),
     inset 0 -1px 1px rgba(0, 0, 0, 0.05), 0 4px 6px rgba(0, 0, 0, 0.1);
-  --popup-bg: rgba(248, 232, 240, 0.9); /* soft pink base */
-  --popup-border: rgba(227, 115, 131, 0.25); /* subtle watermelon pink border */
+  --popup-bg: rgba(248, 232, 240, 0.9);
+  --popup-border: rgba(227, 115, 131, 0.25);
   --popup-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   --btn-hover-bg: #f5c6d4;
   --btn-text-color: #dd5569;
@@ -85,7 +85,7 @@ a {
 
 .section--middle {
   justify-content: flex-start;
-} /* https://www.w3schools.com/css/css3_flexbox_container.asp */
+}
 
 .poppins-thin {
   font-family: "Poppins", sans-serif;
@@ -186,7 +186,7 @@ a {
   max-height: 83%;
   overflow: hidden;
   overflow-y: scroll;
-  overscroll-behavior: contain; /* do we like this? */
+  overscroll-behavior: contain;
   border-radius: 4px;
   outline: 1px solid var(--watermelon-pink);
 }
@@ -271,7 +271,7 @@ a {
   gap: 1rem;
   overflow: hidden;
   overflow-y: scroll;
-  overscroll-behavior: contain; /* do we like this? */
+  overscroll-behavior: contain;
   border-radius: 8px;
 }
 
@@ -378,15 +378,15 @@ a {
   background: linear-gradient(
     135deg,
     #fff0f5,
-    /* lavender blush (very pale pink) */ #ffe6f0,
-    /* soft baby pink */ #fcd6e5,
-    /* light blush pink */ #f3e0ec,
-    /* pale pink-lavender mix */ #fff0f5 /* loop back to lavender blush */
+    #ffe6f0,
+    #fcd6e5,
+    #f3e0ec,
+    #fff0f5
   );
   background-size: 300% 300%;
   animation: princessGradient 12s ease-in-out infinite;
   opacity: 1;
-  border: 2px solid #ff99cc; /* same as resume_button */
+  border: 2px solid #ff99cc;
 }
 
 .contact_div {
@@ -444,7 +444,7 @@ a {
 }
 
 .contact_icon {
-  color: #d94f8c; /* deep rose pink */
+  color: #d94f8c;
   flex-shrink: 0;
 }
 
@@ -526,7 +526,6 @@ a {
   }
 }
 
-/* make the link inherit the pink style */
 .footer_link {
   display: inline-block;
   margin-top: 0;
@@ -692,37 +691,17 @@ a {
   }
 }
 
-/* make another media query for intermediate screen sizes (tablets) */
-
 /* MUSIC CONTROLS */
 
 .music_popup_overlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(
-    var(--light-pink),
-    0.6
-  ); /* or just use a hex with opacity */
+  background-color: rgba(var(--light-pink), 0.6);
   backdrop-filter: blur(4px); /* sm = 4px */
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  pointer-events: auto;
-}
-
-.nothing_old_music_popup_div {
-  /*background-color: rgba(var(--light-pink), 0.2);*/
-  background: var(--pink-gradient);
-  border: 1px solid rgba(var(--hot-pink), 0.3);
-  backdrop-filter: blur(6px);
-  padding: 2rem 1.5rem; /* py-8 px-6 default */
-  border-radius: 0.5rem; /* rounded = 8px */
-  text-align: center;
-  box-shadow: var(--glass-inset-shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 2rem; /* space-y-8 */
   pointer-events: auto;
 }
 
@@ -793,9 +772,9 @@ a {
 .music_button {
   width: 2.5rem;
   height: 2.5rem;
-  background: rgba(248, 232, 238, 0.6); /* very light pink with transparency */
-  backdrop-filter: blur(8px); /* soft blur glass effect */
-  border: 1px solid rgba(255, 105, 180, 0.3); /* soft hot-pink border */
+  background: rgba(248, 232, 238, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 105, 180, 0.3);
   color: var(--foreground);
   border-radius: 9999px;
   display: flex;
@@ -805,23 +784,23 @@ a {
   z-index: 50;
   padding: 0.625rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* optional subtle shadow */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .music_button:hover {
-  background: rgba(248, 200, 220, 0.7); /* slightly darker on hover */
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1); /* a bit more depth */
+  background: rgba(248, 200, 220, 0.7);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
 }
 
 .music_icon {
   width: 100%;
   height: 100%;
-  color: black; /* text-foreground */
+  color: black;
   transition: color 0.2s ease;
 }
 
 .group:hover .music-icon {
-  color: var(--hot-pink); /* text-accent on hover */
+  color: var(--hot-pink);
 }
 
 /* Responsive override for extra small screens and up (xs:right-4 = 1rem) */
@@ -853,6 +832,6 @@ a {
   .menu {
     flex-direction: column;
     gap: 0.5rem;
-    padding-left: 3rem; /* 👈 Add this line */
+    padding-left: 3rem;
   }
 }

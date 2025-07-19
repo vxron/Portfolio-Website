@@ -62,8 +62,6 @@ export const BgMusic = () => {
   }, [isPlaying, currentTrack]);
 
   useEffect(() => {
-    console.log(" Modal shown?", showModal); //debugging
-    //setShowModal(true); // Force modal for testing
     const consent = localStorage.getItem("musicConsent");
     const consentTime = localStorage.getItem("consentTime");
 
@@ -110,7 +108,7 @@ export const BgMusic = () => {
     if (isPlaying) {
       playCurrentTrack();
     }
-  }, [currentTrack]);
+  }, [currentTrack, isPlaying]);
 
   const toggle = () => {
     const newState = !isPlaying;
