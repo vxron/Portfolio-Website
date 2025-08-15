@@ -1,40 +1,45 @@
-import { useRef, useEffect, forwardRef, useImperativeHandle } from "react";
-import { useGLTF, useFBX, useAnimations } from "@react-three/drei";
+import {
+  useRef,
+  useEffect,
+  forwardRef,
+  useImperativeHandle,
+  Suspense,
+} from "react";
+import { useGLTF, useFBX, useAnimations, Html } from "@react-three/drei";
 
 export const Tinkerbell = forwardRef((props, ref) => {
   const group = useRef();
-  // Ref to Tinkerbell's foot for trail in future (todo)
-  const footRef = useRef();
+  const footRef = useRef(null);
 
-  // Load the model and animations
-  const gltf = useGLTF("/models/TinkerBellSmall.glb");
+  // Load assets
+  const { scene } = useGLTF("/models/TinkerBellSmall.glb");
   const fbx = useFBX("/animations/TinkerBell.fbx");
 
-  // Attach FBX animation to the GLB model
-  const { actions } = useAnimations([fbx.animations[0]], group);
-
+  // Drive the FBX anim on the group (guard in case animations[0] is missing)
+  const { actions } = useAnimations(fbx?.animations ?? [], group);
   useEffect(() => {
-    const name = fbx.animations[0]?.name;
-    if (actions && name) {
-      actions[name]?.reset().fadeIn(0.5).play();
-    }
+    const first = fbx?.animations?.[0];
+    if (first && actions) actions[first.name]?.reset().fadeIn(0.5).play();
   }, [actions, fbx]);
 
-  // Expose the foot ref to parent
-  useImperativeHandle(ref, () => footRef.current);
+  // Expose LeftShoe (if present) WITHOUT mounting it as a separate primitive
+  useEffect(() => {
+    if (!scene) return;
+    const shoe = scene.getObjectByName("LeftShoe");
+    footRef.current = shoe || null;
+  }, [scene]);
+
+  useImperativeHandle(ref, () => footRef.current, []);
+
+  if (!scene) return null; // Suspense will handle fallback at parent
 
   return (
     <group ref={group} {...props}>
-      <primitive object={gltf.scene} />
-      <primitive
-        object={gltf.scene.getObjectByName("LeftShoe")}
-        ref={footRef}
-      />
+      <primitive object={scene} dispose={null} />
     </group>
   );
 });
 
-// Preload assets
+Tinkerbell.displayName = "Tinkerbell";
 useGLTF.preload("/models/TinkerBellSmall.glb");
 useFBX.preload("/animations/TinkerBell.fbx");
-Tinkerbell.displayName = "Tinkerbell";

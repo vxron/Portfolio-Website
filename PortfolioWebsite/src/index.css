@@ -626,6 +626,50 @@ a {
   transition: width 0.5s ease-in-out;
 }
 
+/* INSTRUCTIONAL POPUP FOR SCROLLING */
+/* Make the mouse-icon container the positioning anchor */
+.element-container {
+  position: relative;
+}
+
+/* One-time hint bubble */
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -10px);
+  bottom: 101px; /* tweak so it sits just above your mouse icon */
+  background: --dark-watermelon-pink(255, 255, 255, 0.9);
+  color: #222;
+  border-radius: 9999px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1.1;
+  white-space: nowrap;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  animation: hint-in 260ms ease-out forwards,
+    hint-out 420ms ease-in forwards 3600ms; /* auto-fade */
+  z-index: 5; /* above the mouse icon */
+}
+
+@keyframes hint-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -10px);
+  }
+}
+@keyframes hint-out {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -18px);
+  }
+}
+
 /* RESPONSIVE */
 /* Media Query For HTML Responsiveness, Targetting 900px threshold */
 

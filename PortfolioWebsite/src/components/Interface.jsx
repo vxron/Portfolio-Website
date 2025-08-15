@@ -1,6 +1,6 @@
 import { useScroll } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "motion/react";
 import { config } from "../config";
 import { atom, useAtom } from "jotai";
@@ -14,19 +14,50 @@ gsap.registerPlugin(ScrollTrigger);
 // Global state, which we can use/call from any component globally (used for Projects section)
 export const projectAtom = atom(config.projects[0]);
 
+// 🔸 One-time scroll hint that uses your `.scroll-hint` CSS.
+//    Place it inside `.element-container` so it's positioned by your CSS.
+function ScrollHintOnce({
+  text = "Scroll to make me walk",
+  storageKey = "scrollHintSeen_v7", // new key so testing isn’t suppressed by older keys
+}) {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const open = setTimeout(() => setVisible(true), 350); // small delayed entrance
+    const auto = setTimeout(() => {
+      setVisible(false);
+      sessionStorage.setItem(storageKey, "1");
+    }, 4200); // keep visible (matches your CSS animation timing)
+
+    return () => {
+      clearTimeout(open);
+      clearTimeout(auto);
+    };
+  }, [storageKey]);
+
+  return <div className="scroll-hint">{text}</div>;
+}
+
 export const Interface = () => {
   const { isMobile } = useMobile();
   // State to know if user has already scrolled (initially false)
   const [hasScrolled, setHasScrolled] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const scrollData = useScroll();
+  const prevScrolled = useRef(false);
 
   // Global vars
   const [_project, setProject] = useAtom(projectAtom);
 
-  // Update hasScrolled state if user has scrolled using scroll data
+  // Update hasScrolled only when it flips (avoid setState every frame)
   useFrame(() => {
-    setHasScrolled(scrollData.offset > 0); // Won't cause re-renders unless it's true which will happen once
+    const v = scrollData.offset > 0.0005;
+    if (v !== prevScrolled.current) {
+      prevScrolled.current = v;
+      setHasScrolled(v);
+    }
   });
+
   return (
     // Div Class "interface" will act as main HTML container
     <div className="interface">
@@ -35,6 +66,12 @@ export const Interface = () => {
         <section className="section section--bottom">
           {/* Animation to tell user they can scroll if they haven't already */}
           <div className="element-container">
+            {!hasScrolled && (
+              <ScrollHintOnce
+                text="Scroll to make me walk"
+                disabled={hasScrolled}
+              />
+            )}
             <motion.div
               className="scroll-down"
               initial="visible"
