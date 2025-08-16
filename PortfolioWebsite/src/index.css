@@ -649,7 +649,7 @@ a {
   pointer-events: none;
   opacity: 0;
   animation: hint-in 260ms ease-out forwards,
-    hint-out 420ms ease-in forwards 3600ms; /* auto-fade */
+    hint-out 420ms ease-in forwards 4000ms; /* auto-fade */
   z-index: 5; /* above the mouse icon */
 }
 

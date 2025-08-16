@@ -7,7 +7,7 @@ export default function ResponsiveScale({
   children,
   baseW = 6, // design width in world units
   baseH = 4, // design height in world units
-  mult = useMobile ? 0.98 : 0.88, // overall zoom (lower = farther/“zoomed out”)
+  mult = useMobile ? 1.0 : 0.88, // overall zoom (lower = farther/“zoomed out”)
   clamp = [0.65, 1.25],
 }) {
   const { viewport } = useThree();

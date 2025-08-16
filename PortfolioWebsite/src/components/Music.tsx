@@ -37,6 +37,12 @@ export const BgMusic = () => {
   const [showModal, setShowModal] = useState(false);
   const [currentTrack, setCurrentTrack] = useState<1 | 2>(1); // track swapper
 
+  // Emit "bgmusic:closed" so the scroll hint can start its timer
+  const emitClosed = useCallback(() => {
+    sessionStorage.setItem("bgmusic_closed", "1");
+    window.dispatchEvent(new Event("bgmusic:closed"));
+  }, []);
+
   const playCurrentTrack = () => {
     const current = currentTrack === 1 ? audioRef1.current : audioRef2.current;
     const other = currentTrack === 1 ? audioRef2.current : audioRef1.current;
@@ -65,28 +71,21 @@ export const BgMusic = () => {
     const consent = localStorage.getItem("musicConsent");
     const consentTime = localStorage.getItem("consentTime");
 
-    if (
-      consent &&
-      consentTime &&
-      new Date(consentTime).getTime() + 3 * 24 * 60 * 60 * 1000 > Date.now()
-    ) {
+    const threeDays = 3 * 24 * 60 * 60 * 1000;
+    const isStale =
+      !consent ||
+      !consentTime ||
+      new Date(consentTime).getTime() + threeDays <= Date.now();
+
+    if (isStale) {
+      setShowModal(true);
+    } else {
       setIsPlaying(consent === "true");
-
       if (consent === "true") {
-        // Browser allows audio only after interaction — listen for first one
-        const resumePlayback = () => {
-          audioRef1.current?.play();
-          ["click", "keydown", "touchstart"].forEach((event) =>
-            document.removeEventListener(event, resumePlayback)
-          );
-        };
-
         ["click", "keydown", "touchstart"].forEach((event) =>
           document.addEventListener(event, handleFirstUserInteraction)
         );
       }
-    } else {
-      setShowModal(true);
     }
   }, [handleFirstUserInteraction]);
 
@@ -112,7 +111,7 @@ export const BgMusic = () => {
 
   const toggle = () => {
     const newState = !isPlaying;
-    setIsPlaying(!isPlaying);
+    setIsPlaying(newState);
     if (newState) {
       playCurrentTrack();
     } else {
@@ -122,12 +121,35 @@ export const BgMusic = () => {
     localStorage.setItem("musicConsent", String(newState));
     localStorage.setItem("consentTime", new Date().toISOString());
     setShowModal(false);
+    if (showModal) emitClosed();
   };
+
+  // Modal "Yes" handler: start music, remember consent, close modal, emit event
+  const acceptInModal = useCallback(() => {
+    if (!isPlaying) {
+      setIsPlaying(true);
+      playCurrentTrack();
+    }
+    localStorage.setItem("musicConsent", "true");
+    localStorage.setItem("consentTime", new Date().toISOString());
+    setShowModal(false);
+    emitClosed();
+  }, [isPlaying, emitClosed]);
+
+  // Modal "No" handler: don’t play, remember choice, close modal, emit event
+  const declineInModal = useCallback(() => {
+    audioRef1.current?.pause();
+    audioRef2.current?.pause();
+    setIsPlaying(false);
+    localStorage.setItem("musicConsent", "false");
+    localStorage.setItem("consentTime", new Date().toISOString());
+    setShowModal(false);
+    emitClosed();
+  }, [emitClosed]);
+
   return (
     <div className="music_div">
-      {showModal && (
-        <Modal onClose={() => setShowModal(false)} toggle={toggle} />
-      )}
+      {showModal && <Modal onClose={declineInModal} toggle={acceptInModal} />}
 
       <audio ref={audioRef1}>
         <source src={"/audio/Sahar El Layali Violin.mp3"} type="audio/mpeg" />

@@ -200,14 +200,14 @@ export const Experience = () => {
             />
           </Float>
           <PalmTree
-            scale={0.024}
+            scale={0.025}
             rotation-y={
               isMobile
                 ? THREE.MathUtils.degToRad(195)
                 : THREE.MathUtils.degToRad(140)
             }
             position={
-              isMobile ? [1, -0.6, -5] : [4.8 * scaleFactor, -0.5, -4.1]
+              isMobile ? [1, -0.6, -5] : [4.8 * scaleFactor, -0.95, -3.5]
             }
           />
           <group scale={isMobile ? 0.3 : 1} position-y={isMobile ? -0.4 : 0}>
@@ -237,7 +237,7 @@ export const Experience = () => {
                 ref={titleRef}
                 size={1.1}
                 position-z={-3}
-                position-y={isMobile ? -0.5 : 0}
+                position-y={isMobile ? -0.5 : -0.1}
                 bevelEnabled
                 bevelThickness={0.3}
                 rotation-y={isMobile ? Math.PI / 20 : Math.PI / 13}

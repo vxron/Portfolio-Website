@@ -14,27 +14,45 @@ gsap.registerPlugin(ScrollTrigger);
 // Global state, which we can use/call from any component globally (used for Projects section)
 export const projectAtom = atom(config.projects[0]);
 
-// 🔸 One-time scroll hint that uses your `.scroll-hint` CSS.
-//    Place it inside `.element-container` so it's positioned by your CSS.
 function ScrollHintOnce({
   text = "Scroll to make me walk",
-  storageKey = "scrollHintSeen_v7", // new key so testing isn’t suppressed by older keys
+  storageKey = "scrollHintSeen_v10", // bump key so old tests don't suppress it
+  showDelay = 350, // ms after music popup closes before showing
+  visibleMs = 4200, // total time on screen before auto-hide
 }) {
   const [visible, setVisible] = useState(false);
+  const openT = useRef();
+  const autoT = useRef();
 
   useEffect(() => {
-    const open = setTimeout(() => setVisible(true), 350); // small delayed entrance
-    const auto = setTimeout(() => {
-      setVisible(false);
-      sessionStorage.setItem(storageKey, "1");
-    }, 4200); // keep visible (matches your CSS animation timing)
-
-    return () => {
-      clearTimeout(open);
-      clearTimeout(auto);
+    const startTimers = () => {
+      // Show after a small delay
+      openT.current = setTimeout(() => setVisible(true), showDelay);
+      // Auto-hide after visibleMs
+      autoT.current = setTimeout(() => {
+        setVisible(false);
+        sessionStorage.setItem(storageKey, "1");
+      }, showDelay + visibleMs);
     };
-  }, [storageKey]);
-
+    // If the music popup already closed earlier in this session, start immediately
+    if (sessionStorage.getItem("bgmusic_closed") === "1") {
+      startTimers();
+    } else {
+      // Otherwise wait for the popup to close
+      const onClosed = () => {
+        window.removeEventListener("bgmusic:closed", onClosed);
+        startTimers();
+      };
+      window.addEventListener("bgmusic:closed", onClosed, { once: true });
+      // cleanup in case component unmounts first
+      return () => window.removeEventListener("bgmusic:closed", onClosed);
+    }
+    return () => {
+      clearTimeout(openT.current);
+      clearTimeout(autoT.current);
+    };
+  }, [storageKey, showDelay, visibleMs]);
+  if (!visible) return null;
   return <div className="scroll-hint">{text}</div>;
 }
 
@@ -42,7 +60,6 @@ export const Interface = () => {
   const { isMobile } = useMobile();
   // State to know if user has already scrolled (initially false)
   const [hasScrolled, setHasScrolled] = useState(false);
-  const [showHint, setShowHint] = useState(false);
   const scrollData = useScroll();
   const prevScrolled = useRef(false);
 
@@ -68,8 +85,9 @@ export const Interface = () => {
           <div className="element-container">
             {!hasScrolled && (
               <ScrollHintOnce
-                text="Scroll to make me walk"
-                disabled={hasScrolled}
+                text="Scroll To Make Me Walk"
+                showDelay={100}
+                visibleMs={4600}
               />
             )}
             <motion.div
