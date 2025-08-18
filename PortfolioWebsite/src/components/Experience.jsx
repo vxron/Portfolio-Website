@@ -6,6 +6,7 @@ import {
   Float,
   RoundedBox,
   useTexture,
+  Html,
 } from "@react-three/drei";
 import { Avatar } from "./Avatar";
 import { useRef, useState, useEffect } from "react";
@@ -20,10 +21,7 @@ import { MacBookPro } from "./MacBookPro";
 import { PalmTree } from "./PalmTree";
 import { Monitor } from "./Monitor";
 import * as THREE from "three";
-//#import { motion } from "framer-motion-3d";
 import { MonitorScreen } from "./MonitorScreen";
-//import { useSectionState } from "../States";
-//import { SectionContext } from "../States";
 import { FlipBook } from "./FlipBook";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -122,24 +120,89 @@ export const Experience = () => {
     --> start is current material opacity, 
     --> target is invisible (0) if leaving section, otherwise (1) if it's current section based on above,
     --> transition is fade_speed */
-    var parent_section = "home";
+    // Smooth fades for single & multi-material meshes, without popping.
+    // - Fade opacity with LERP each frame
+    // - Switch transparent/depthWrite only at the ends of fades
+    // - Toggle visibility based on *current* opacity, not the target
+    // Smooth fades for standard mesh materials only (skip VFX/shaders/additive).
+    // smooth fades (skip VFX materials) and RESTORE original flags after fade
+    const init = (Experience.__matInit ||= new WeakSet());
+    const initFlags = (Experience.__initFlags ||= new WeakMap()); // <- remember original flags per material
+    const shouldFade = (m) => {
+      // Only touch regular Mesh* materials with NormalBlending
+      const isStandard =
+        m.isMeshStandardMaterial ||
+        m.isMeshPhysicalMaterial ||
+        m.isMeshLambertMaterial ||
+        m.isMeshPhongMaterial ||
+        m.isMeshBasicMaterial;
+      const isCustom =
+        m.isShaderMaterial ||
+        m.isRawShaderMaterial ||
+        m.isPointsMaterial ||
+        m.isSpriteMaterial;
+      return isStandard && !isCustom && m.blending === THREE.NormalBlending;
+    };
+    let parent_section = "home";
     if (sceneContainer.current) {
       sceneContainer.current.traverse((child) => {
-        // each time we're iterating through new section recursively, change the current section name to reflect current section
-        if (child.parent == sceneContainer.current) {
+        if (child.parent === sceneContainer.current)
           parent_section = child.name;
+        if (!child.isMesh || !child.material) return;
+
+        const target = sectionOpacity.current[parent_section] || 0;
+        const mats = Array.isArray(child.material)
+          ? child.material
+          : [child.material];
+
+        let sum = 0,
+          n = 0,
+          handled = 0;
+        for (const m of mats) {
+          if (!shouldFade(m)) continue; // don’t touch VFX / custom / additive
+          if (!init.has(m)) {
+            // store original flags so we can put them back after fading
+            initFlags.set(m, {
+              transparent: !!m.transparent,
+              depthWrite: m.depthWrite !== undefined ? m.depthWrite : true,
+            });
+            m.opacity = m.opacity ?? 1;
+            init.add(m);
+          }
+          // During any fade (target !== current 1), ensure transparent pass
+          if (target < 1 - 1e-3) {
+            m.transparent = true;
+            m.depthWrite = false;
+          }
+
+          const from = m.opacity ?? 1;
+          const to = THREE.MathUtils.lerp(from, target, FADE_SPEED);
+          if (to !== from) m.opacity = to;
+          sum += to;
+          n++;
+          handled++;
+
+          // When fully shown, restore opaque settings for stable sorting
+          if (target > 1 - 1e-3 && to > 0.99) {
+            const f = initFlags.get(m);
+            m.opacity = 1;
+            if (f) {
+              m.transparent = f.transparent; // keep pages transparent if they started that way
+              m.depthWrite = f.depthWrite;
+            } else {
+              // sensible fallback
+              m.transparent = false;
+              m.depthWrite = true;
+            }
+          }
         }
-        if (child.isMesh && child.material) {
-          // Apply opacity transition for each section's elements
-          // if not 0, target is 1
-          const targetOpacity = sectionOpacity.current[parent_section] || 0;
-          // Smoothly interpolate the opacity
-          child.material.opacity = THREE.MathUtils.lerp(
-            child.material.opacity,
-            targetOpacity,
-            FADE_SPEED
-          );
-          child.material.transparent = true; // Ensure transparency is applied
+
+        // Only toggle visibility when we actually faded something on this mesh
+        if (handled) {
+          const avg = sum / (n || 1);
+          const shouldBeVisible = avg > 0.02 || target > 0;
+          if (child.visible !== shouldBeVisible)
+            child.visible = shouldBeVisible;
         }
       });
     }
@@ -164,7 +227,7 @@ export const Experience = () => {
     };
 
     window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashChange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
   }, []);
 
   return (
@@ -210,7 +273,7 @@ export const Experience = () => {
               isMobile ? [1, -0.6, -5] : [4.8 * scaleFactor, -0.95, -3.5]
             }
           />
-          <group scale={isMobile ? 0.3 : 1} position-y={isMobile ? -0.4 : 0}>
+          <group scale={isMobile ? 0.3 : 1} position-y={isMobile ? -0.7 : 0}>
             <Float
               floatIntensity={0.4}
               rotationIntensity={0.2}
@@ -219,9 +282,9 @@ export const Experience = () => {
             >
               <Center disableY disableZ>
                 <SectionTitle
-                  size={0.8}
-                  position-x={1.1}
-                  position-y={isMobile ? 1 : 1.4}
+                  size={isMobile ? 1.1 : 0.9}
+                  position-x={isMobile ? 0.0 : 1.1}
+                  position-y={isMobile ? 1.1 : 1.4}
                   position-z={-3}
                   bevelEnabled
                   bevelThickness={0.3}
@@ -232,19 +295,27 @@ export const Experience = () => {
               </Center>
             </Float>
 
-            <Center disableY disableZ>
-              <SectionTitle
-                ref={titleRef}
-                size={1.1}
-                position-z={-3}
-                position-y={isMobile ? -0.5 : -0.1}
-                bevelEnabled
-                bevelThickness={0.3}
-                rotation-y={isMobile ? Math.PI / 20 : Math.PI / 13}
-              >
-                {config.home.subtitle}
-              </SectionTitle>
-            </Center>
+            <Float
+              floatIntensity={isMobile ? 0.4 : 0}
+              rotationIntensity={isMobile ? 0.3 : 0}
+              speed={2.1}
+              floatingRange={[-0.05, 0.05]}
+            >
+              <Center disableY disableZ>
+                <SectionTitle
+                  ref={titleRef}
+                  size={1.1}
+                  position-z={-3}
+                  position-y={isMobile ? -0.7 : -0.1}
+                  bevelEnabled
+                  bevelThickness={0.3}
+                  rotation-y={isMobile ? 0 : Math.PI / 13}
+                  rotation-x={isMobile ? -Math.PI / 20 : 0}
+                >
+                  {config.home.subtitle}
+                </SectionTitle>
+              </Center>
+            </Float>
           </group>
         </group>
 
@@ -302,6 +373,22 @@ export const Experience = () => {
               speed={2}
               rotationIntensity={1}
             >
+              {/* Show immediately when on experience & book is closed.
+                  Portaled into ScrollControls' fixed layer so it isn't hidden by <Scroll html>. */}
+              {section === "experience" && !bookOpen && (
+                <Html
+                  portal={{ current: scrollData.fixed }}
+                  // keep it screen-aligned; omit "transform" for now for maximum visibility
+                  distanceFactor={8}
+                >
+                  <div
+                    className="flipbook-hint flipbook-hint--raised"
+                    style={{ pointerEvents: "none" }}
+                  >
+                    Tap Flipbook To Open
+                  </div>
+                </Html>
+              )}
               <FlipBook setBookOpen={setBookOpen} />
             </Float>
           </group>
