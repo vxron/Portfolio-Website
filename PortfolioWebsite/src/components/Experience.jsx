@@ -11,7 +11,7 @@ import {
 import { Avatar } from "./Avatar";
 import { useRef, useState, useEffect } from "react";
 import { SectionTitle } from "./SectionTitle";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { config } from "../config";
 import { Star } from "./Star";
 import { BookCase } from "./BookCase";
@@ -23,6 +23,7 @@ import { Monitor } from "./Monitor";
 import * as THREE from "three";
 import { MonitorScreen } from "./MonitorScreen";
 import { FlipBook } from "./FlipBook";
+import FlipbookArrow from "./FlipbookArrow";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
@@ -45,6 +46,15 @@ export const Experience = () => {
 
   const sceneContainer = useRef();
   const scrollData = useScroll();
+  const { camera } = useThree();
+  // Anchors for arrow/label — both in WORLD, near the flipbook
+  const labelAnchor = useRef();
+  const bookAnchor = useRef();
+  // temp vectors to avoid allocations
+  const _bookPos = useRef(new THREE.Vector3());
+  const _fwd = useRef(new THREE.Vector3());
+  const _right = useRef(new THREE.Vector3());
+  const _up = useRef(new THREE.Vector3());
 
   // simple smoothing + per-material base opacity cache
   const tRef = useRef(0);
@@ -192,6 +202,25 @@ export const Experience = () => {
           child.visible = sum / n > 0.02;
         }
       });
+    }
+    // Position the label relative to the flipbook
+    if (labelAnchor.current && bookAnchor.current) {
+      // book world position
+      bookAnchor.current.getWorldPosition(_bookPos.current);
+      // camera basis
+      camera.getWorldDirection(_fwd.current).normalize(); // camera forward
+      _up.current.copy(camera.up).normalize(); // world up of camera
+      _right.current.crossVectors(_fwd.current, _up.current).normalize(); // camera right
+      // distance-aware offsets so it looks good on any zoom
+      const dist = camera.position.distanceTo(_bookPos.current);
+      const offX = THREE.MathUtils.clamp(dist * 0.18, 0.25, 0.9); // right
+      const offY = THREE.MathUtils.clamp(dist * 0.14, 0.22, 0.75); // up
+      const offZ = THREE.MathUtils.clamp(dist * 0.1, 0.15, 0.5); // toward camera
+      labelAnchor.current.position
+        .copy(_bookPos.current)
+        .addScaledVector(_right.current, offX)
+        .addScaledVector(_up.current, offY)
+        .addScaledVector(_fwd.current, -offZ);
     }
   });
 
@@ -360,24 +389,50 @@ export const Experience = () => {
               speed={2}
               rotationIntensity={1}
             >
-              {/* Show immediately when on experience & book is closed.
-                  Portaled into ScrollControls' fixed layer so it isn't hidden by <Scroll html>. */}
-              {section === "experience" && !bookOpen && (
-                <Html
-                  portal={{ current: scrollData.fixed }}
-                  // keep it screen-aligned; omit "transform" for now for maximum visibility
-                  distanceFactor={8}
-                >
-                  <div
-                    className="flipbook-hint flipbook-hint--raised"
-                    style={{ pointerEvents: "none" }}
+              {/* Target: wrap the actual FlipBook so the arrow locks to its pivot */}
+              <group ref={bookAnchor}>
+                <FlipBook setBookOpen={setBookOpen} />
+              </group>
+
+              {/* Source: keep the group mounted; only toggle the Html inside */}
+              <group ref={labelAnchor}>
+                {section === "experience" && !bookOpen && (
+                  <Html
+                    portal={{ current: scrollData.fixed }}
+                    distanceFactor={8}
+                    // avoid blocking pointer events; keep it purely informational
+                    transform={false}
                   >
-                    Tap Flipbook To Open
-                  </div>
-                </Html>
-              )}
-              <FlipBook setBookOpen={setBookOpen} />
+                    <div
+                      className="flipbook-hint flipbook-hint--raised"
+                      style={{ pointerEvents: "none" }}
+                    >
+                      Tap Flipbook To Open
+                    </div>
+                  </Html>
+                )}
+              </group>
             </Float>
+            <group
+              rotation-x={-Math.PI / 5}
+              rotation-y={-Math.PI / 6.5}
+              rotation-z={-Math.PI / 8}
+            >
+              {/* Animated arrow between labelAnchor (source) and bookAnchor (target) */}
+              <FlipbookArrow
+                fromRef={labelAnchor}
+                toRef={bookAnchor}
+                visible={section === "experience" && !bookOpen}
+                curveBend={0.3}
+                bendAxis="up"
+                lineWidthPx={3}
+                trimStart={0.42}
+                trimEnd={0.44}
+                highlightSpeed={1.1}
+                toOffsetLocal={[-2.1, -0.7, 0.04]} // right, up, toward camera (LOCAL to flipbook)
+                fromOffsetLocal={[0.5, 0.3, 0.0]} // adjust if the label anchor feels off
+              />
+            </group>
           </group>
         </group>
 

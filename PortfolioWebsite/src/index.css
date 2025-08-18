@@ -332,8 +332,8 @@ a {
   background: rgba(255, 255, 255, 0.92);
   color: #222;
   border-radius: 9999px;
-  padding: 2px 5.5px; /* smaller pill */
-  font-size: clamp(8px, 0.5vw, 12px); /* responsive text */
+  padding: 0.35rem 0.55rem;
+  font-size: clamp(0.55rem, 0.5vw, 0.75rem); /* responsive text */
   line-height: 1; /* tighter */
   white-space: nowrap;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
@@ -346,8 +346,8 @@ a {
 }
 /* Raise it higher using rem, not px */
 .flipbook-hint--raised {
-  transform: translateY(-3rem);
-  transform: translateX(+3rem);
+  /*transform: translateY(-3rem);
+  transform: translateX(+3rem);*/
 }
 @keyframes flip-fade-in {
   to {
