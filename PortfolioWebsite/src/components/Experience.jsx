@@ -46,6 +46,10 @@ export const Experience = () => {
   const sceneContainer = useRef();
   const scrollData = useScroll();
 
+  // simple smoothing + per-material base opacity cache
+  const tRef = useRef(0);
+  const baseOpacityMap = useRef(new WeakMap());
+
   // Distance along z-axis between sections (as char walks fwd/backward)
   const SECTION_DISTANCE = isMobile ? 10 : 20;
 
@@ -101,17 +105,23 @@ export const Experience = () => {
       sceneContainer.current.position.x = 0;
       // This moves groups in -z dir (towards camera) to sim camera moving backward (in +z dir)
     }
-    // Get current section number (current state), and acquire title from config
-    setSection(
-      config.sections[Math.round(scrollData.offset * (scrollData.pages - 1))]
-    );
+    // Smooth the scroll position in "section units" (0..N-1)
+    const rawT = scrollData.offset * (scrollData.pages - 1);
+    tRef.current = THREE.MathUtils.lerp(tRef.current, rawT, 0.15); // 0.12–0.2 = smoother
+    const t = tRef.current;
 
-    // Set opacity TARGET to be 1 for current section and 0 for others
+    const activeIdx = Math.round(t);
+    setSection(config.sections[activeIdx]);
+
+    // Start fades sooner with a soft window around each section
+    const CROSSFADE_RADIUS = 0.65; // 0.5–0.8 to taste
     sectionOpacity.current = Object.fromEntries(
-      config.sections.map((section_name) => [
-        section_name,
-        section_name === section ? 1 : 0,
-      ])
+      config.sections.map((name, i) => {
+        const d = Math.abs(t - i);
+        const lin = Math.max(0, 1 - d / CROSSFADE_RADIUS);
+        const w = lin * lin * (3 - 2 * lin); // smoothstep
+        return [name, w]; // 0..1
+      })
     );
 
     /* Make sure scene is loaded, then traverse all children of sceneContainer (basically everything),
@@ -126,10 +136,8 @@ export const Experience = () => {
     // - Toggle visibility based on *current* opacity, not the target
     // Smooth fades for standard mesh materials only (skip VFX/shaders/additive).
     // smooth fades (skip VFX materials) and RESTORE original flags after fade
-    const init = (Experience.__matInit ||= new WeakSet());
-    const initFlags = (Experience.__initFlags ||= new WeakMap()); // <- remember original flags per material
+    const inited = (Experience.__fadeInit ||= new WeakSet());
     const shouldFade = (m) => {
-      // Only touch regular Mesh* materials with NormalBlending
       const isStandard =
         m.isMeshStandardMaterial ||
         m.isMeshPhysicalMaterial ||
@@ -143,6 +151,7 @@ export const Experience = () => {
         m.isSpriteMaterial;
       return isStandard && !isCustom && m.blending === THREE.NormalBlending;
     };
+
     let parent_section = "home";
     if (sceneContainer.current) {
       sceneContainer.current.traverse((child) => {
@@ -150,59 +159,37 @@ export const Experience = () => {
           parent_section = child.name;
         if (!child.isMesh || !child.material) return;
 
-        const target = sectionOpacity.current[parent_section] || 0;
+        const weight = sectionOpacity.current[parent_section] || 0;
         const mats = Array.isArray(child.material)
           ? child.material
           : [child.material];
 
         let sum = 0,
-          n = 0,
-          handled = 0;
+          n = 0;
         for (const m of mats) {
-          if (!shouldFade(m)) continue; // don’t touch VFX / custom / additive
-          if (!init.has(m)) {
-            // store original flags so we can put them back after fading
-            initFlags.set(m, {
-              transparent: !!m.transparent,
-              depthWrite: m.depthWrite !== undefined ? m.depthWrite : true,
-            });
-            m.opacity = m.opacity ?? 1;
-            init.add(m);
-          }
-          // During any fade (target !== current 1), ensure transparent pass
-          if (target < 1 - 1e-3) {
+          if (!shouldFade(m)) continue;
+
+          if (!inited.has(m)) {
+            // enable opacity to actually render; do this once
             m.transparent = true;
-            m.depthWrite = false;
+            // leave depthWrite as-is to avoid changing your page/VFX behavior
+            const base = typeof m.opacity === "number" ? m.opacity : 1;
+            baseOpacityMap.current.set(m, base);
+            inited.add(m);
           }
 
-          const from = m.opacity ?? 1;
-          const to = THREE.MathUtils.lerp(from, target, FADE_SPEED);
-          if (to !== from) m.opacity = to;
-          sum += to;
+          const base = baseOpacityMap.current.get(m) ?? 1;
+          const target = base * weight;
+          // simple, uniform smoothing
+          m.opacity = THREE.MathUtils.lerp(m.opacity ?? base, target, 0.22); // 0.18–0.28 to taste
+
+          sum += m.opacity;
           n++;
-          handled++;
-
-          // When fully shown, restore opaque settings for stable sorting
-          if (target > 1 - 1e-3 && to > 0.99) {
-            const f = initFlags.get(m);
-            m.opacity = 1;
-            if (f) {
-              m.transparent = f.transparent; // keep pages transparent if they started that way
-              m.depthWrite = f.depthWrite;
-            } else {
-              // sensible fallback
-              m.transparent = false;
-              m.depthWrite = true;
-            }
-          }
         }
 
-        // Only toggle visibility when we actually faded something on this mesh
-        if (handled) {
-          const avg = sum / (n || 1);
-          const shouldBeVisible = avg > 0.02 || target > 0;
-          if (child.visible !== shouldBeVisible)
-            child.visible = shouldBeVisible;
+        if (n) {
+          // optional: hide when fully faded to save a few draws (won’t pop)
+          child.visible = sum / n > 0.02;
         }
       });
     }

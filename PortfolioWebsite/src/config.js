@@ -125,6 +125,13 @@ export const config = {
       tags: [],
     },
     {
+      name: "Melanoma Classification Algorithm",
+      description: "",
+      image: "projects/Melanoma-Detector.png",
+      link: "pdfs/Final-Melanoma-Paper.pdf",
+      tags: [],
+    },
+    {
       name: "Monitor & Alarm System for Neck Posture",
       description: "",
       image: "projects/monitor-alarm.png",
