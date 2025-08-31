@@ -332,8 +332,8 @@ a {
   background: rgba(255, 255, 255, 0.92);
   color: #222;
   border-radius: 9999px;
-  padding: 0.35rem 0.55rem;
-  font-size: clamp(0.55rem, 0.5vw, 0.75rem); /* responsive text */
+  padding: 0.2rem 0.35rem;
+  font-size: clamp(0.25rem, 0.33vw, 0.5rem); /* responsive text */
   line-height: 1; /* tighter */
   white-space: nowrap;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
@@ -343,11 +343,6 @@ a {
     flip-fade-out 420ms ease-in forwards 3600ms; /* total ~4.2s */
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-}
-/* Raise it higher using rem, not px */
-.flipbook-hint--raised {
-  /*transform: translateY(-3rem);
-  transform: translateX(+3rem);*/
 }
 @keyframes flip-fade-in {
   to {

@@ -18,6 +18,8 @@ export default function FlipbookArrow({
   toOffsetLocal = [0, 0, 0],
   maxWorldLength = Infinity, // optionally cap the length (in world units)
   debug = false,
+  tailWorldRef, // optional
+  headWorldRef, // optional
 }) {
   const { camera } = useThree();
 
@@ -94,6 +96,10 @@ export default function FlipbookArrow({
         S.current.copy(E.current).addScaledVector(dir, -maxWorldLength);
       }
     }
+
+    // publish world positions
+    tailWorldRef?.current?.copy(S.current);
+    headWorldRef?.current?.copy(E.current);
 
     // 4) control point bowed to the camera's right
     camera.getWorldDirection(F.current).normalize();

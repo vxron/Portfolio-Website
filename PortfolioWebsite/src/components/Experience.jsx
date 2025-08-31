@@ -216,11 +216,14 @@ export const Experience = () => {
       const offX = THREE.MathUtils.clamp(dist * 0.18, 0.25, 0.9); // right
       const offY = THREE.MathUtils.clamp(dist * 0.14, 0.22, 0.75); // up
       const offZ = THREE.MathUtils.clamp(dist * 0.1, 0.15, 0.5); // toward camera
+      const labelNudgeRight = -1.9;
+      const labelNudgeUp = 0.0;
+      const labelNudgeFwd = 0.0;
       labelAnchor.current.position
         .copy(_bookPos.current)
-        .addScaledVector(_right.current, offX)
-        .addScaledVector(_up.current, offY)
-        .addScaledVector(_fwd.current, -offZ);
+        .addScaledVector(_right.current, offX + labelNudgeRight)
+        .addScaledVector(_up.current, offY + labelNudgeUp)
+        .addScaledVector(_fwd.current, -offZ + labelNudgeFwd);
     }
   });
 
