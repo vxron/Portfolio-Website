@@ -66,13 +66,10 @@ export const Experience = () => {
   const titleRef = useRef();
   const tinkerbellRef = useRef();
 
-  //const setGlobalSection = useSectionState((state) => state.setSection);
   const emitterBlue = useRef();
   const emitterRed = useRef();
   const alphaMap = useTexture("textures/Particles/symbol_02.png");
-  // Continuously store opacity for each section group in a map array (basically a dict)
-  // by default, opacity state gets set to 1 when the section_name from config.js matches current section, 0 for others
-  // use useRef instead of useState to avoid setting states in useFrame thereby avoid triggering re-renders
+
   const sectionOpacity = useRef(
     Object.fromEntries(
       config.sections.map((section_name) => [
@@ -82,10 +79,29 @@ export const Experience = () => {
     )
   );
 
+  // Snap settings
+  const snapping = useRef(false);
+  const snapToRef = useRef((i) => {});
+
+  // ---- Disable browser scroll restoration (prevents landing mid-scroll) ----
+  useEffect(() => {
+    const prev = history.scrollRestoration;
+    try {
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+    } catch {}
+    return () => {
+      try {
+        history.scrollRestoration = prev || "auto";
+      } catch {}
+    };
+  }, []);
+
   // Animate sceneContainer group to move through different sections
   useFrame(({ clock }) => {
     const time = clock.elapsedTime;
-    // update VFX particles position
+
     emitterRed.current.position.x = isMobile
       ? Math.sin(time * 6) * 2.5
       : Math.sin(time * 6) * 1.5;
@@ -102,50 +118,33 @@ export const Experience = () => {
       : Math.sin(time * 3) * 1.6;
     emitterBlue.current.position.z = Math.cos(time * 4) * 1.5;
 
-    // separate logic for mobile experience for horizontal scrolling
     if (isMobile) {
       sceneContainer.current.position.x =
         -scrollData.offset * SECTION_DISTANCE * (scrollData.pages - 1);
-      // since we can change between two modes at runtime, need to reset
       sceneContainer.current.position.z = 0;
     } else {
-      // vertical scrolling on desktop
       sceneContainer.current.position.z =
         -scrollData.offset * SECTION_DISTANCE * (scrollData.pages - 1);
       sceneContainer.current.position.x = 0;
-      // This moves groups in -z dir (towards camera) to sim camera moving backward (in +z dir)
     }
-    // Smooth the scroll position in "section units" (0..N-1)
+
     const rawT = scrollData.offset * (scrollData.pages - 1);
-    tRef.current = THREE.MathUtils.lerp(tRef.current, rawT, 0.15); // 0.12–0.2 = smoother
+    tRef.current = THREE.MathUtils.lerp(tRef.current, rawT, 0.15);
     const t = tRef.current;
 
     const activeIdx = Math.round(t);
     setSection(config.sections[activeIdx]);
 
-    // Start fades sooner with a soft window around each section
-    const CROSSFADE_RADIUS = 0.65; // 0.5–0.8 to taste
+    const CROSSFADE_RADIUS = 0.65;
     sectionOpacity.current = Object.fromEntries(
       config.sections.map((name, i) => {
         const d = Math.abs(t - i);
         const lin = Math.max(0, 1 - d / CROSSFADE_RADIUS);
-        const w = lin * lin * (3 - 2 * lin); // smoothstep
-        return [name, w]; // 0..1
+        const w = lin * lin * (3 - 2 * lin);
+        return [name, w];
       })
     );
 
-    /* Make sure scene is loaded, then traverse all children of sceneContainer (basically everything),
-    and apply correct opacities based on above */
-    /* Linear Interpolation logic:
-    --> start is current material opacity, 
-    --> target is invisible (0) if leaving section, otherwise (1) if it's current section based on above,
-    --> transition is fade_speed */
-    // Smooth fades for single & multi-material meshes, without popping.
-    // - Fade opacity with LERP each frame
-    // - Switch transparent/depthWrite only at the ends of fades
-    // - Toggle visibility based on *current* opacity, not the target
-    // Smooth fades for standard mesh materials only (skip VFX/shaders/additive).
-    // smooth fades (skip VFX materials) and RESTORE original flags after fade
     const inited = (Experience.__fadeInit ||= new WeakSet());
     const shouldFade = (m) => {
       const isStandard =
@@ -178,44 +177,32 @@ export const Experience = () => {
           n = 0;
         for (const m of mats) {
           if (!shouldFade(m)) continue;
-
           if (!inited.has(m)) {
-            // enable opacity to actually render; do this once
             m.transparent = true;
-            // leave depthWrite as-is to avoid changing your page/VFX behavior
             const base = typeof m.opacity === "number" ? m.opacity : 1;
             baseOpacityMap.current.set(m, base);
             inited.add(m);
           }
-
           const base = baseOpacityMap.current.get(m) ?? 1;
           const target = base * weight;
-          // simple, uniform smoothing
-          m.opacity = THREE.MathUtils.lerp(m.opacity ?? base, target, 0.22); // 0.18–0.28 to taste
-
+          m.opacity = THREE.MathUtils.lerp(m.opacity ?? base, target, 0.22);
           sum += m.opacity;
           n++;
         }
-
-        if (n) {
-          // optional: hide when fully faded to save a few draws (won’t pop)
-          child.visible = sum / n > 0.02;
-        }
+        if (n) child.visible = sum / n > 0.02;
       });
     }
-    // Position the label relative to the flipbook
+
+    // label anchor placement
     if (labelAnchor.current && bookAnchor.current) {
-      // book world position
       bookAnchor.current.getWorldPosition(_bookPos.current);
-      // camera basis
-      camera.getWorldDirection(_fwd.current).normalize(); // camera forward
-      _up.current.copy(camera.up).normalize(); // world up of camera
-      _right.current.crossVectors(_fwd.current, _up.current).normalize(); // camera right
-      // distance-aware offsets so it looks good on any zoom
+      camera.getWorldDirection(_fwd.current).normalize();
+      _up.current.copy(camera.up).normalize();
+      _right.current.crossVectors(_fwd.current, _up.current).normalize();
       const dist = camera.position.distanceTo(_bookPos.current);
-      const offX = THREE.MathUtils.clamp(dist * 0.18, 0.25, 0.9); // right
-      const offY = THREE.MathUtils.clamp(dist * 0.14, 0.22, 0.75); // up
-      const offZ = THREE.MathUtils.clamp(dist * 0.1, 0.15, 0.5); // toward camera
+      const offX = THREE.MathUtils.clamp(dist * 0.18, 0.25, 0.9);
+      const offY = THREE.MathUtils.clamp(dist * 0.14, 0.22, 0.75);
+      const offZ = THREE.MathUtils.clamp(dist * 0.1, 0.15, 0.5);
       const labelNudgeRight = -1.9;
       const labelNudgeUp = 0.0;
       const labelNudgeFwd = 0.0;
@@ -227,32 +214,191 @@ export const Experience = () => {
     }
   });
 
-  // Event listener for top bar menu
+  // --- Snapping input + initial grace period ---
   useEffect(() => {
-    // menu must match config.js sections
-    const handleHashChange = () => {
-      const sectionIndex = config.sections.indexOf(
-        window.location.hash.replace("#", "")
-      );
-      if (sectionIndex >= 0) {
-        // scroll to section
-        scrollData.el.scrollTo(
-          0,
-          (sectionIndex / (config.sections.length - 1)) *
-            (scrollData.el.scrollHeight - scrollData.el.clientHeight)
-        );
-        // scrollData.el is the scrollable element created by ScrollControls
-      }
+    const el = scrollData.el;
+    if (!el) return;
+
+    const totalPages = config.sections.length;
+    const maxIdx = totalPages - 1;
+
+    // tuneables
+    const SNAP_DURATION = 0.75;
+    const SNAP_EASE = "power2.out";
+    const INITIAL_GRACE_MS = 2000; // grace to ignore ghost wheel
+    const COOLDOWN_MS = 160; // after each snap
+    const MIN_WHEEL_UNITS = 160; // threshold for trackpad/mouse
+    const MIN_SWIPE_PX = 28; // threshold for touch
+
+    // state for this effect
+    const wheelAccum = { val: 0 };
+    const touchAccum = { val: 0 };
+    const coolUntil = { t: performance.now() + INITIAL_GRACE_MS };
+
+    // helper: map page index -> scrollTop
+    const indexToScrollTop = (idx) => {
+      const span = el.scrollHeight - el.clientHeight;
+      if (span <= 0) return 0;
+      return (idx / (totalPages - 1)) * span;
     };
 
+    // On mount: if no hash, *force* scrollTop to page 0 after layout settles.
+    // Using double rAF wins over late layout/FF/Safari quirks.
+    let raf1 = 0,
+      raf2 = 0;
+    if (!window.location.hash) {
+      raf1 = requestAnimationFrame(() => {
+        raf2 = requestAnimationFrame(() => {
+          el.scrollTop = indexToScrollTop(0);
+          // also kill any existing tween & set instantly, to align internal state
+          gsap.killTweensOf(el);
+          gsap.set(el, { scrollTop: indexToScrollTop(0) });
+        });
+      });
+    }
+
+    const snapTo = (idx, duration = SNAP_DURATION) => {
+      idx = THREE.MathUtils.clamp(idx, 0, maxIdx);
+      snapping.current = true;
+
+      gsap.killTweensOf(el);
+      gsap.to(el, {
+        scrollTop: indexToScrollTop(idx),
+        duration,
+        ease: SNAP_EASE,
+        onComplete: () => {
+          snapping.current = false;
+          coolUntil.t = performance.now() + COOLDOWN_MS;
+          wheelAccum.val = 0;
+          touchAccum.val = 0;
+        },
+      });
+    };
+
+    // expose to menu/hash
+    snapToRef.current = snapTo;
+
+    // If the window regains focus (or becomes visible), swallow stray momentum for a bit.
+    const armCooldown = () => {
+      coolUntil.t = performance.now() + 500;
+      wheelAccum.val = 0;
+      touchAccum.val = 0;
+    };
+    window.addEventListener("focus", armCooldown);
+    const onVis = () => {
+      if (document.visibilityState === "visible") armCooldown();
+    };
+    document.addEventListener("visibilitychange", onVis);
+
+    // Wheel (desktop/trackpad)
+    const onWheel = (e) => {
+      const now = performance.now();
+      if (snapping.current || now < coolUntil.t) {
+        e.preventDefault();
+        e.stopImmediatePropagation?.();
+        return;
+      }
+
+      const dy = e.deltaY || e.deltaX || 0;
+      if (!dy) return;
+
+      wheelAccum.val += dy;
+
+      if (Math.abs(wheelAccum.val) < MIN_WHEEL_UNITS) {
+        e.preventDefault();
+        e.stopImmediatePropagation?.();
+        return;
+      }
+
+      e.preventDefault();
+      e.stopImmediatePropagation?.();
+
+      const dir = Math.sign(wheelAccum.val);
+      wheelAccum.val = 0;
+
+      const idxNow = Math.round(scrollData.offset * (totalPages - 1));
+      const next = THREE.MathUtils.clamp(
+        idxNow + (dir > 0 ? 1 : -1),
+        0,
+        maxIdx
+      );
+      if (next !== idxNow) snapTo(next);
+    };
+
+    // Touch (mobile)
+    const touchState = { y0: 0 };
+    const onTouchStart = (e) => {
+      touchState.y0 = e.touches[0].clientY;
+      touchAccum.val = 0;
+    };
+    const onTouchMove = (e) => {
+      const now = performance.now();
+      if (snapping.current || now < coolUntil.t) {
+        e.preventDefault();
+        e.stopImmediatePropagation?.();
+        return;
+      }
+
+      const y = e.touches[0].clientY;
+      const dy = touchState.y0 - y; // up = next page
+      touchState.y0 = y;
+      touchAccum.val += dy;
+
+      if (Math.abs(touchAccum.val) < MIN_SWIPE_PX) return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation?.();
+
+      const dir = Math.sign(touchAccum.val);
+      touchAccum.val = 0;
+
+      const idxNow = Math.round(scrollData.offset * (totalPages - 1));
+      const next = THREE.MathUtils.clamp(
+        idxNow + (dir > 0 ? 1 : -1),
+        0,
+        maxIdx
+      );
+      if (next !== idxNow) snapTo(next);
+    };
+
+    // capture:true so we beat ScrollControls; passive:false to allow preventDefault
+    el.addEventListener("wheel", onWheel, { passive: false, capture: true });
+    el.addEventListener("touchstart", onTouchStart, {
+      passive: true,
+      capture: true,
+    });
+    el.addEventListener("touchmove", onTouchMove, {
+      passive: false,
+      capture: true,
+    });
+
+    return () => {
+      if (raf1) cancelAnimationFrame(raf1);
+      if (raf2) cancelAnimationFrame(raf2);
+      el.removeEventListener("wheel", onWheel, true);
+      el.removeEventListener("touchstart", onTouchStart, true);
+      el.removeEventListener("touchmove", onTouchMove, true);
+      window.removeEventListener("focus", armCooldown);
+      document.removeEventListener("visibilitychange", onVis);
+    };
+  }, [scrollData.el, config.sections.length]);
+
+  // Hash navigation -> snap (works with the exposed snapToRef)
+  useEffect(() => {
+    const handleHashChange = () => {
+      const idx = config.sections.indexOf(
+        window.location.hash.replace("#", "")
+      );
+      if (idx >= 0) snapToRef.current(idx, 0.6);
+    };
     window.addEventListener("hashchange", handleHashChange);
+    handleHashChange();
     return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
+  }, [config.sections.length]);
 
   return (
     <>
       <Environment preset="sunset" />
-      {/* Render avatar; Hide avatar when book opens */}
       <Avatar
         hideAvatar={
           (section === "projects" && !isMobile) ||
@@ -262,7 +408,6 @@ export const Experience = () => {
         scale={isMobile ? 1.1 : 1}
         position-x={-0.05}
       />
-      {/* Group containing different website sections; must match array defined in config.js */}
       <group ref={sceneContainer} animate={section}>
         {/* HOME */}
         <group name="home">
@@ -383,27 +528,22 @@ export const Experience = () => {
               EXPERIENCE
             </SectionTitle>
           )}
-          {/* Hide title when book opens */}
           <group position={[0, 1, 0.5]}>
-            {/* match to FlipBook's y and z */}
             <Float
               rotation-x={-Math.PI / 7}
               floatIntensity={0.5}
               speed={2}
               rotationIntensity={1}
             >
-              {/* Target: wrap the actual FlipBook so the arrow locks to its pivot */}
               <group ref={bookAnchor}>
                 <FlipBook setBookOpen={setBookOpen} />
               </group>
 
-              {/* Source: keep the group mounted; only toggle the Html inside */}
               <group ref={labelAnchor}>
                 {section === "experience" && !bookOpen && (
                   <Html
                     portal={{ current: scrollData.fixed }}
                     distanceFactor={8}
-                    // avoid blocking pointer events; keep it purely informational
                     transform={false}
                   >
                     <div
@@ -421,7 +561,6 @@ export const Experience = () => {
               rotation-y={-Math.PI / 6.5}
               rotation-z={-Math.PI / 8}
             >
-              {/* Animated arrow between labelAnchor (source) and bookAnchor (target) */}
               <FlipbookArrow
                 fromRef={labelAnchor}
                 toRef={bookAnchor}
@@ -432,8 +571,8 @@ export const Experience = () => {
                 trimStart={0.42}
                 trimEnd={0.44}
                 highlightSpeed={1.1}
-                toOffsetLocal={[-2.1, -0.7, 0.04]} // right, up, toward camera (LOCAL to flipbook)
-                fromOffsetLocal={[0.5, 0.3, 0.0]} // adjust if the label anchor feels off
+                toOffsetLocal={[-2.1, -0.7, 0.04]}
+                fromOffsetLocal={[0.5, 0.3, 0.0]}
               />
             </group>
           </group>
