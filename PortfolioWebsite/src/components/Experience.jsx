@@ -41,6 +41,12 @@ export const Experience = () => {
   const { isMobile, scaleFactor } = useMobile();
   // State machine for revealing/hiding sections (starting at home page)
   const [section, setSection] = useState(config.sections[0]);
+  useEffect(() => {
+    // tell the menu which section is active
+    window.dispatchEvent(
+      new CustomEvent("sectionChange", { detail: { section } })
+    );
+  }, [section]);
   // State machine for flipbook
   const [bookOpen, setBookOpen] = useState(false);
 

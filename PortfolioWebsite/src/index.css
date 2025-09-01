@@ -622,12 +622,31 @@ a {
 }
 
 .menu_buttons {
+  position: relative;
   display: flex;
   gap: clamp(0.5rem, 2.7vw, 1rem); /* shrink gap on small screens */
   align-items: center;
   flex-wrap: wrap; /* allow wrapping if needed */
   justify-content: center;
   margin-inline: auto;
+}
+
+.menu_star {
+  position: absolute;
+  left: -0.52rem;
+  bottom: clamp(-1.2rem, -2.2vh, -0.9rem); /* a bit more gap below titles */
+  transform: translateX(calc(var(--x, 0px) - 50%)); /* center under item */
+  transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 180ms ease, filter 240ms ease;
+  font-size: clamp(16px, 2.1vw, 22px);
+  line-height: 1;
+  color: var(--watermelon-pink);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 0 6px rgba(231, 115, 131, 0.55),
+    0 0 12px rgba(231, 115, 131, 0.35);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.01));
+  pointer-events: none;
+  z-index: 1001;
+  opacity: 0; /* hidden on home; shown elsewhere */
 }
 
 .menu_button {
