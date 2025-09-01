@@ -12,6 +12,8 @@ import { Menu } from "./components/Menu";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { BgMusic } from "./components/Music";
 import ResponsiveScale from "./components/ResponsiveScale";
+// r150+: use ColorManagement.enabled and outputColorSpace
+THREE.ColorManagement.enabled = true;
 
 function App() {
   // keep track of when page has loaded
@@ -31,8 +33,16 @@ function App() {
       {ready && <BgMusic />}
       <Canvas
         dpr={[1, 1.75]}
-        gl={{ antialias: true, powerPreference: "high-performance" }}
+        gl={{
+          antialias: true,
+          powerPreference: "high-performance",
+          outputColorSpace: THREE.SRGBColorSpace,
+        }}
         camera={{ position: [0, 0.5, 5], fov: 50 }}
+        onCreated={({ gl }) => {
+          gl.toneMapping = THREE.ACESFilmicToneMapping;
+          gl.toneMappingExposure = 1.0;
+        }}
       >
         <color attach="background" args={["#f5f3ee"]} />
         <fog attach="fog" args={["#f5f3ee", 4, 120]} />
@@ -69,9 +79,9 @@ function App() {
           </MotionConfig>
           <Scroll html>
             <MotionConfig transition={{ duration: 1 }}>
-              <group position-y={-1}>
+              <div>
                 <Interface />
-              </group>
+              </div>
             </MotionConfig>
           </Scroll>
         </ScrollControls>

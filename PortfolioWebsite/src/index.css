@@ -327,14 +327,45 @@ a {
   font-family: "Poppins", sans-serif;
 }
 
+/* PROJECTS LABEL (HINT) */
+.projects-hint {
+  background: rgba(255, 255, 255, 0.92);
+  color: #222;
+  border-radius: 9999px;
+  padding: 0.35rem 0.6rem;
+  font-size: clamp(0.55rem, 0.55vw, 0.9rem);
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  /* one-time fade like flipbook */
+  animation: flip-fade-in 240ms ease-out forwards,
+    flip-fade-out 420ms ease-in forwards 3600ms;
+}
+
+/* mobile 3D-anchored version shown only on small screens */
+.projects-hint--mobile {
+  display: inline-flex;
+}
+
+/* Show desktop hint, hide mobile hint on larger screens */
+@media (min-width: 901px) {
+  .projects-hint--mobile {
+    display: none;
+  }
+}
+
 /* EXPERIENCE SECTION */
 .flipbook-hint {
   background: rgba(255, 255, 255, 0.92);
   color: #222;
   border-radius: 9999px;
-  padding: 2px 5.5px; /* smaller pill */
-  font-size: clamp(8px, 0.5vw, 12px); /* responsive text */
-  line-height: 1; /* tighter */
+  padding: 0.35rem 0.6rem;
+  font-size: clamp(0.55rem, 0.55vw, 0.9rem);
+  line-height: 1;
   white-space: nowrap;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
   pointer-events: none;
@@ -344,11 +375,6 @@ a {
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
 }
-/* Raise it higher using rem, not px */
-.flipbook-hint--raised {
-  transform: translateY(-3rem);
-  transform: translateX(+3rem);
-}
 @keyframes flip-fade-in {
   to {
     opacity: 1;
@@ -357,6 +383,13 @@ a {
 @keyframes flip-fade-out {
   to {
     opacity: 0;
+  }
+}
+/* Bigger hint on small screens */
+@media (max-width: 900px) {
+  .flipbook-hint {
+    font-size: clamp(0.6rem, 2vw, 0.95rem);
+    padding: 0.4rem 0.7rem;
   }
 }
 
@@ -394,6 +427,7 @@ a {
   flex-direction: column;
   font-size: 0.9rem;
   bottom: 3rem;
+  border: 5px red;
 }
 
 /* 'Before' used to get around Framer Motion for gradient effect */
@@ -435,6 +469,7 @@ a {
   flex-direction: column;
   align-items: flex-start;
   padding: 0.25rem;
+  border: 8px purple;
 }
 
 @keyframes fadeIn {
@@ -464,6 +499,7 @@ a {
   gap: 0.75rem; /* gap-4 = 4 * 0.25rem */
   transition: transform 0.2s ease, color 0.2s ease;
   color: black;
+  border: 5px yellow;
 }
 
 .contact_li:hover {
@@ -495,11 +531,12 @@ a {
   }
 
   .contact {
-    margin-top: calc(75vh - 22rem); /* approximate vertical offset */
-    margin-right: calc(7vw);
+    margin-top: calc(68vh - 24rem); /* approximate vertical offset */
+    margin-right: calc(5vw - 1vh);
   }
   .contact_footer {
-    margin-right: calc(7vw);
+    margin-right: calc(5vw - 1vh);
+    margin-bottom: calc(9vh); /* approximate vertical offset */
   }
 }
 
@@ -572,7 +609,7 @@ a {
 
 .menu {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 1rem;
   position: fixed;
@@ -581,17 +618,42 @@ a {
   right: 4rem;
   background: #f5f3ef8a;
   backdrop-filter: blur(8px);
+  z-index: 1000;
 }
 
 .menu_buttons {
+  position: relative;
   display: flex;
-  gap: 1rem;
+  gap: clamp(0.5rem, 2.7vw, 1rem); /* shrink gap on small screens */
   align-items: center;
+  flex-wrap: wrap; /* allow wrapping if needed */
+  justify-content: center;
+  margin-inline: auto;
+}
+
+.menu_star {
+  position: absolute;
+  left: -0.52rem;
+  bottom: clamp(-1.2rem, -2.2vh, -0.9rem); /* a bit more gap below titles */
+  transform: translateX(calc(var(--x, 0px) - 50%)); /* center under item */
+  transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 180ms ease, filter 240ms ease;
+  font-size: clamp(16px, 2.1vw, 22px);
+  line-height: 1;
+  color: var(--watermelon-pink);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.05), 0 0 6px rgba(231, 115, 131, 0.55),
+    0 0 12px rgba(231, 115, 131, 0.35);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.01));
+  pointer-events: none;
+  z-index: 1001;
+  opacity: 0; /* hidden on home; shown elsewhere */
 }
 
 .menu_button {
   font-weight: bold;
   color: var(--text-color);
+  text-decoration: none;
+  font-size: clamp(12px, 2.6vw, 16px); /* shrink text on small screens */
 }
 
 .menu_button:hover {
@@ -754,11 +816,6 @@ a {
     width: 100%;
   }
 
-  .menu {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
   .loading-screen__title {
     font-size: 2rem;
   }
@@ -847,6 +904,9 @@ a {
 }
 
 .music_button {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
   width: 2.5rem;
   height: 2.5rem;
   background: rgba(248, 232, 238, 0.6);
