@@ -363,9 +363,9 @@ a {
   background: rgba(255, 255, 255, 0.92);
   color: #222;
   border-radius: 9999px;
-  padding: 0.25rem 0.35rem;
-  font-size: clamp(0.27rem, 0.57vw, 0.8rem); /* responsive text */
-  line-height: 1; /* tighter */
+  padding: 0.35rem 0.6rem;
+  font-size: clamp(0.55rem, 0.55vw, 0.9rem);
+  line-height: 1;
   white-space: nowrap;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
   pointer-events: none;
@@ -427,6 +427,7 @@ a {
   flex-direction: column;
   font-size: 0.9rem;
   bottom: 3rem;
+  border: 5px red;
 }
 
 /* 'Before' used to get around Framer Motion for gradient effect */
@@ -468,6 +469,7 @@ a {
   flex-direction: column;
   align-items: flex-start;
   padding: 0.25rem;
+  border: 8px purple;
 }
 
 @keyframes fadeIn {
@@ -497,6 +499,7 @@ a {
   gap: 0.75rem; /* gap-4 = 4 * 0.25rem */
   transition: transform 0.2s ease, color 0.2s ease;
   color: black;
+  border: 5px yellow;
 }
 
 .contact_li:hover {
@@ -528,11 +531,12 @@ a {
   }
 
   .contact {
-    margin-top: calc(75vh - 22rem); /* approximate vertical offset */
-    margin-right: calc(7vw);
+    margin-top: calc(68vh - 24rem); /* approximate vertical offset */
+    margin-right: calc(5vw - 1vh);
   }
   .contact_footer {
-    margin-right: calc(7vw);
+    margin-right: calc(5vw - 1vh);
+    margin-bottom: calc(9vh); /* approximate vertical offset */
   }
 }
 
