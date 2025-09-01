@@ -203,9 +203,9 @@ export const Experience = () => {
       const offX = THREE.MathUtils.clamp(dist * 0.18, 0.25, 0.9);
       const offY = THREE.MathUtils.clamp(dist * 0.14, 0.22, 0.75);
       const offZ = THREE.MathUtils.clamp(dist * 0.1, 0.15, 0.5);
-      const labelNudgeRight = -1.9;
-      const labelNudgeUp = 0.0;
-      const labelNudgeFwd = 0.0;
+      const labelNudgeRight = -1.8;
+      const labelNudgeUp = isMobile ? 2.3 : 0.18;
+      const labelNudgeFwd = 0.1;
       labelAnchor.current.position
         .copy(_bookPos.current)
         .addScaledVector(_right.current, offX + labelNudgeRight)
@@ -408,6 +408,22 @@ export const Experience = () => {
         scale={isMobile ? 1.1 : 1}
         position-x={-0.05}
       />
+      {/* Projects hint (MOBILE): anchored just under the avatar */}
+      {section === "projects" && isMobile && (
+        <group position-x={-0.05} position-z={-1.8} position-y={-0.3}>
+          <Html
+            portal={{ current: scrollData.fixed }}
+            distanceFactor={8}
+            transform={false}
+            center
+          >
+            <div className="projects-hint projects-hint--mobile">
+              Tap &amp; scroll projects L/R for more info
+            </div>
+          </Html>
+        </group>
+      )}
+
       <group ref={sceneContainer} animate={section}>
         {/* HOME */}
         <group name="home">
@@ -547,7 +563,7 @@ export const Experience = () => {
                     transform={false}
                   >
                     <div
-                      className="flipbook-hint flipbook-hint--raised"
+                      className="flipbook-hint"
                       style={{ pointerEvents: "none" }}
                     >
                       Tap Flipbook To Open
@@ -565,14 +581,14 @@ export const Experience = () => {
                 fromRef={labelAnchor}
                 toRef={bookAnchor}
                 visible={section === "experience" && !bookOpen}
-                curveBend={0.3}
+                curveBend={isMobile ? 0.75 : 0.3}
                 bendAxis="up"
-                lineWidthPx={3}
-                trimStart={0.42}
-                trimEnd={0.44}
-                highlightSpeed={1.1}
-                toOffsetLocal={[-2.1, -0.7, 0.04]}
-                fromOffsetLocal={[0.5, 0.3, 0.0]}
+                lineWidthPx={isMobile ? 2.2 : 3}
+                trimStart={isMobile ? 0.3 : 0.41}
+                trimEnd={isMobile ? 0.2 : 0.45}
+                highlightSpeed={isMobile ? 0.9 : 1.1}
+                toOffsetLocal={isMobile ? [-6, 2.5, 1.58] : [-2.1, -0.45, 0.42]}
+                fromOffsetLocal={isMobile ? [-3, 4.5, 1.52] : [0.5, 0.3, 0.36]}
               />
             </group>
           </group>
@@ -599,6 +615,21 @@ export const Experience = () => {
               rotation-y={-Math.PI / 6}
               scale={0.8}
             >
+              {/* DESKTOP projects hint: anchored above the 3D element */}
+              {section === "projects" && !isMobile && (
+                <group position={[0.05, 2.75, -0.8]}>
+                  <Html
+                    portal={{ current: scrollData.fixed }}
+                    distanceFactor={8}
+                    transform={false}
+                    center
+                  >
+                    <div className="projects-hint projects-hint--desktop">
+                      Tap &amp; Scroll Projects for More Info
+                    </div>
+                  </Html>
+                </group>
+              )}
               <MonitorScreen
                 rotation-x={-0.18}
                 position-z={-0.895}

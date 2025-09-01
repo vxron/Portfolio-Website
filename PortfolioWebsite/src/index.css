@@ -327,13 +327,44 @@ a {
   font-family: "Poppins", sans-serif;
 }
 
+/* PROJECTS LABEL (HINT) */
+.projects-hint {
+  background: rgba(255, 255, 255, 0.92);
+  color: #222;
+  border-radius: 9999px;
+  padding: 0.35rem 0.6rem;
+  font-size: clamp(0.55rem, 0.55vw, 0.9rem);
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  /* one-time fade like flipbook */
+  animation: flip-fade-in 240ms ease-out forwards,
+    flip-fade-out 420ms ease-in forwards 3600ms;
+}
+
+/* mobile 3D-anchored version shown only on small screens */
+.projects-hint--mobile {
+  display: inline-flex;
+}
+
+/* Show desktop hint, hide mobile hint on larger screens */
+@media (min-width: 901px) {
+  .projects-hint--mobile {
+    display: none;
+  }
+}
+
 /* EXPERIENCE SECTION */
 .flipbook-hint {
   background: rgba(255, 255, 255, 0.92);
   color: #222;
   border-radius: 9999px;
-  padding: 0.2rem 0.35rem;
-  font-size: clamp(0.25rem, 0.33vw, 0.5rem); /* responsive text */
+  padding: 0.25rem 0.35rem;
+  font-size: clamp(0.27rem, 0.57vw, 0.8rem); /* responsive text */
   line-height: 1; /* tighter */
   white-space: nowrap;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
@@ -352,6 +383,13 @@ a {
 @keyframes flip-fade-out {
   to {
     opacity: 0;
+  }
+}
+/* Bigger hint on small screens */
+@media (max-width: 900px) {
+  .flipbook-hint {
+    font-size: clamp(0.6rem, 2vw, 0.95rem);
+    padding: 0.4rem 0.7rem;
   }
 }
 
@@ -567,7 +605,7 @@ a {
 
 .menu {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding: 1rem;
   position: fixed;
@@ -576,17 +614,23 @@ a {
   right: 4rem;
   background: #f5f3ef8a;
   backdrop-filter: blur(8px);
+  z-index: 1000;
 }
 
 .menu_buttons {
   display: flex;
-  gap: 1rem;
+  gap: clamp(0.5rem, 2.7vw, 1rem); /* shrink gap on small screens */
   align-items: center;
+  flex-wrap: wrap; /* allow wrapping if needed */
+  justify-content: center;
+  margin-inline: auto;
 }
 
 .menu_button {
   font-weight: bold;
   color: var(--text-color);
+  text-decoration: none;
+  font-size: clamp(12px, 2.6vw, 16px); /* shrink text on small screens */
 }
 
 .menu_button:hover {
@@ -749,11 +793,6 @@ a {
     width: 100%;
   }
 
-  .menu {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
   .loading-screen__title {
     font-size: 2rem;
   }
@@ -842,6 +881,9 @@ a {
 }
 
 .music_button {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.75rem;
   width: 2.5rem;
   height: 2.5rem;
   background: rgba(248, 232, 238, 0.6);
