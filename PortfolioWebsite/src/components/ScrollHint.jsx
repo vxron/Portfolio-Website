@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from "motion/react";
 
 export default function ScrollHint({
   text = "Scroll to make me walk",
-  bottom = 84, // px from bottom; tweak to sit by your mouse icon
+  bottom = 84,
   offsetX = 0, // horizontal nudge (px)
   showDelay = 400, // ms before appearing
   autoHide = 2500, // ms visible time
-  sessionKey = "scrollHintSeen_v2", // new key so it shows once this session
+  sessionKey = "scrollHintSeen_v2",
   testing = false, // set true to force show while debugging
 }) {
   const [visible, setVisible] = useState(false);
