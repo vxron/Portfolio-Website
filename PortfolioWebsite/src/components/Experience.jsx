@@ -27,7 +27,7 @@ import FlipbookArrow from "./FlipbookArrow";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useMobile } from "../hooks/useMobile";
-import { TinkerbellController } from "./TinkerbellUI";
+//import { TinkerbellController } from "./TinkerbellUI"; NO TINKERBELL FOR NOW TO REDUCE LOADING TIME
 import { VFXParticles } from "./VFXParticles";
 import { VFXEmitter } from "./VFXEmitter";
 
@@ -67,7 +67,7 @@ export const Experience = () => {
   const SECTION_DISTANCE = isMobile ? 10 : 20;
 
   const titleRef = useRef();
-  const tinkerbellRef = useRef();
+  //const tinkerbellRef = useRef(); FOR NOW
 
   const emitterBlue = useRef();
   const emitterRed = useRef();
@@ -695,6 +695,7 @@ export const Experience = () => {
           name="contact"
         >
           <SectionTitle position-x={0.4}>CONTACT</SectionTitle>
+          {/*
           {!isMobile ? (
             <TinkerbellController
               ref={tinkerbellRef}
@@ -705,7 +706,7 @@ export const Experience = () => {
               rotation-x={Math.PI / 9}
               rotation-z={-Math.PI / 25}
             ></TinkerbellController>
-          ) : null}
+          ) : null}*/}
           <VFXParticles
             position={isMobile ? [6, -2, 0] : [0, 0, -3]}
             name="sparks"
