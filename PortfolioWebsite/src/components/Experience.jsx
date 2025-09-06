@@ -33,9 +33,6 @@ import { VFXEmitter } from "./VFXEmitter";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Transition speed between sections (higher = slower fade)
-const FADE_SPEED = 0.05;
-
 export const Experience = () => {
   // useMobile hook for responsiveness
   const { isMobile, scaleFactor } = useMobile();
@@ -714,7 +711,7 @@ export const Experience = () => {
             name="sparks"
             alphaMap={alphaMap}
             settings={{
-              nbParticles: 100000,
+              nbParticles: 10000,
               renderMode: "billboard",
               intensity: 1.2,
               fadeSize: [0, 0],
@@ -725,7 +722,7 @@ export const Experience = () => {
             ref={emitterRed}
             emitter="sparks"
             settings={{
-              nbParticles: 5000,
+              nbParticles: 4000,
               colorStart: ["pink", "#ff99cc"],
               colorEnd: "#DA70D6",
               size: isMobile ? [0.05, 0.5] : [0.02, 0.22],
@@ -742,7 +739,7 @@ export const Experience = () => {
             ref={emitterBlue}
             emitter="sparks"
             settings={{
-              nbParticles: 8000,
+              nbParticles: 6000,
               colorStart: ["#eb16af", "#ffa9ed"],
               startPositionMin: isMobile ? [7, 4, 0] : [1.2, 1.5, 0],
               startPositionMax: isMobile ? [7, 4, 0] : [1, 1.4, 0],

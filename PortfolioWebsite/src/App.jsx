@@ -2,12 +2,11 @@
 import { ScrollControls, Scroll } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Experience } from "./components/Experience";
-import { useState, Suspense, useRef, useLayoutEffect } from "react";
-import { useThree } from "@react-three/fiber";
+import { useState, Suspense, useRef } from "react";
 import * as THREE from "three";
 import { config } from "./config";
 import { Interface } from "./components/Interface";
-import { motion, MotionConfig } from "motion/react";
+import { MotionConfig } from "motion/react";
 import { Menu } from "./components/Menu";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { BgMusic } from "./components/Music";
@@ -20,13 +19,6 @@ function App() {
   const [ready, setReady] = useState(false);
   const contentRef = useRef();
 
-  // dimensions of 3d scene
-  //const width = 8.882429021961798;
-  //const height = 1.1618082784116268 * 3.5;
-  //const depth = 4.5;
-  //const aspect = width / height;
-  // equation for responsive fov of camera to accomodate diff screen sizes
-  //const fov = 2 * Math.atan(width / aspect / (2 * depth)) * (180 / Math.PI);
   return (
     <>
       <LoadingScreen onFinish={() => setReady(true)}></LoadingScreen>
@@ -50,14 +42,6 @@ function App() {
         <ambientLight intensity={0.3} />
         {/* Strong directional light for sunlight-like shadows */}
         <directionalLight position={[2, 4, 2]} intensity={0.3} />
-        {/* Focused spotlight for extra depth on book/scene */}
-        {/*<spotLight
-          position={[-2, 4, 5]}
-          angle={Math.PI / 6}
-          intensity={0.3}
-          penumbra={0.5}
-          castShadow
-        />*/}
         <ScrollControls
           pages={config.sections.length}
           damping={0.1}
@@ -83,11 +67,7 @@ function App() {
                 <Interface />
               </div>
               {/* mobile-only “guard rail” so bottom bar doesn’t hide content */}
-              <div
-                style={{ border: "1px solid #e91e63" }}
-                className="mobile-bottom-spacer"
-                aria-hidden
-              />
+              <div className="mobile-bottom-spacer" aria-hidden />
             </MotionConfig>
           </Scroll>
         </ScrollControls>
