@@ -231,32 +231,33 @@ export const Experience = () => {
     // tuneables
     const SNAP_DURATION = 0.75;
     const SNAP_EASE = "power2.out";
-    const INITIAL_GRACE_MS = 2000; // grace to ignore ghost wheel
+    const INITIAL_GRACE_MS = 2000; // ignore ghost wheel at load
     const COOLDOWN_MS = 160; // after each snap
-    const MIN_WHEEL_UNITS = 160; // threshold for trackpad/mouse
-    const MIN_SWIPE_PX = 28; // threshold for touch
+    const FENCE_GRACE_MS = 280; // extra grace after pane scroll
+    const MIN_WHEEL_UNITS = 160;
+    const MIN_SWIPE_PX = 28;
 
-    // state for this effect
+    // helpers
+    const getFenceEl = (target) =>
+      target instanceof Element ? target.closest("[data-scroll-fence]") : null;
+
+    // state
     const wheelAccum = { val: 0 };
     const touchAccum = { val: 0 };
     const coolUntil = { t: performance.now() + INITIAL_GRACE_MS };
 
-    // helper: map page index -> scrollTop
     const indexToScrollTop = (idx) => {
       const span = el.scrollHeight - el.clientHeight;
       if (span <= 0) return 0;
       return (idx / (totalPages - 1)) * span;
     };
 
-    // On mount: if no hash, *force* scrollTop to page 0 after layout settles.
-    // Using double rAF wins over late layout/FF/Safari quirks.
+    // force to page 0 on mount if no hash
     let raf1 = 0,
       raf2 = 0;
     if (!window.location.hash) {
       raf1 = requestAnimationFrame(() => {
         raf2 = requestAnimationFrame(() => {
-          el.scrollTop = indexToScrollTop(0);
-          // also kill any existing tween & set instantly, to align internal state
           gsap.killTweensOf(el);
           gsap.set(el, { scrollTop: indexToScrollTop(0) });
         });
@@ -266,7 +267,6 @@ export const Experience = () => {
     const snapTo = (idx, duration = SNAP_DURATION) => {
       idx = THREE.MathUtils.clamp(idx, 0, maxIdx);
       snapping.current = true;
-
       gsap.killTweensOf(el);
       gsap.to(el, {
         scrollTop: indexToScrollTop(idx),
@@ -280,11 +280,8 @@ export const Experience = () => {
         },
       });
     };
-
-    // expose to menu/hash
     snapToRef.current = snapTo;
 
-    // If the window regains focus (or becomes visible), swallow stray momentum for a bit.
     const armCooldown = () => {
       coolUntil.t = performance.now() + 500;
       wheelAccum.val = 0;
@@ -296,8 +293,17 @@ export const Experience = () => {
     };
     document.addEventListener("visibilitychange", onVis);
 
-    // Wheel (desktop/trackpad)
+    // ====== LISTENERS ======
+
+    // WHEEL
     const onWheel = (e) => {
+      // If this wheel started inside a fenced pane, never snap pages.
+      // Also arm a short grace so residual momentum outside the pane doesn't snap.
+      if (getFenceEl(e.target)) {
+        coolUntil.t = Math.max(coolUntil.t, performance.now() + FENCE_GRACE_MS);
+        return; // let the pane scroll naturally
+      }
+
       const now = performance.now();
       if (snapping.current || now < coolUntil.t) {
         e.preventDefault();
@@ -309,7 +315,6 @@ export const Experience = () => {
       if (!dy) return;
 
       wheelAccum.val += dy;
-
       if (Math.abs(wheelAccum.val) < MIN_WHEEL_UNITS) {
         e.preventDefault();
         e.stopImmediatePropagation?.();
@@ -331,13 +336,31 @@ export const Experience = () => {
       if (next !== idxNow) snapTo(next);
     };
 
-    // Touch (mobile)
-    const touchState = { y0: 0 };
+    // TOUCH
+    const touchState = { x0: 0, y0: 0, fenceEl: null };
     const onTouchStart = (e) => {
-      touchState.y0 = e.touches[0].clientY;
+      const t = e.touches?.[0];
+      if (!t) return;
+      touchState.x0 = t.clientX;
+      touchState.y0 = t.clientY;
+      touchState.fenceEl = getFenceEl(e.target) || null;
+      if (touchState.fenceEl) {
+        coolUntil.t = Math.max(coolUntil.t, performance.now() + FENCE_GRACE_MS);
+      }
       touchAccum.val = 0;
     };
+
     const onTouchMove = (e) => {
+      const t = e.touches?.[0];
+      if (!t) return;
+
+      // Any gesture that began inside a fence: never page-snap.
+      if (touchState.fenceEl) {
+        // keep extending grace while the user is still moving inside the pane
+        coolUntil.t = Math.max(coolUntil.t, performance.now() + FENCE_GRACE_MS);
+        return;
+      }
+
       const now = performance.now();
       if (snapping.current || now < coolUntil.t) {
         e.preventDefault();
@@ -345,11 +368,11 @@ export const Experience = () => {
         return;
       }
 
-      const y = e.touches[0].clientY;
-      const dy = touchState.y0 - y; // up = next page
-      touchState.y0 = y;
-      touchAccum.val += dy;
+      const dy = touchState.y0 - t.clientY;
+      touchState.x0 = t.clientX;
+      touchState.y0 = t.clientY;
 
+      touchAccum.val += dy;
       if (Math.abs(touchAccum.val) < MIN_SWIPE_PX) return;
 
       e.preventDefault();
@@ -367,7 +390,15 @@ export const Experience = () => {
       if (next !== idxNow) snapTo(next);
     };
 
-    // capture:true so we beat ScrollControls; passive:false to allow preventDefault
+    const onTouchEnd = () => {
+      if (touchState.fenceEl) {
+        // after lifting the finger, still swallow momentum briefly
+        coolUntil.t = Math.max(coolUntil.t, performance.now() + FENCE_GRACE_MS);
+        touchState.fenceEl = null;
+      }
+    };
+
+    // capture:true beats ScrollControls; passive:false so preventDefault works
     el.addEventListener("wheel", onWheel, { passive: false, capture: true });
     el.addEventListener("touchstart", onTouchStart, {
       passive: true,
@@ -377,6 +408,10 @@ export const Experience = () => {
       passive: false,
       capture: true,
     });
+    el.addEventListener("touchend", onTouchEnd, {
+      passive: true,
+      capture: true,
+    });
 
     return () => {
       if (raf1) cancelAnimationFrame(raf1);
@@ -384,6 +419,7 @@ export const Experience = () => {
       el.removeEventListener("wheel", onWheel, true);
       el.removeEventListener("touchstart", onTouchStart, true);
       el.removeEventListener("touchmove", onTouchMove, true);
+      el.removeEventListener("touchend", onTouchEnd, true);
       window.removeEventListener("focus", armCooldown);
       document.removeEventListener("visibilitychange", onVis);
     };

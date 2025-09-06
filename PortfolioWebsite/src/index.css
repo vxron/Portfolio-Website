@@ -427,7 +427,6 @@ a {
   flex-direction: column;
   font-size: 0.9rem;
   bottom: 3rem;
-  border: 5px red;
 }
 
 /* 'Before' used to get around Framer Motion for gradient effect */
@@ -531,7 +530,7 @@ a {
   }
 
   .contact {
-    margin-top: calc(68vh - 24rem); /* approximate vertical offset */
+    margin-top: calc(68vh - 22rem); /* approximate vertical offset */
     margin-right: calc(5vw - 1vh);
   }
   .contact_footer {
@@ -970,5 +969,18 @@ a {
     flex-direction: column;
     gap: 0.5rem;
     padding-left: 3rem;
+  }
+}
+
+/* Phones/tablets only */
+@media (hover: none) and (pointer: coarse) {
+  .mobile-bottom-spacer {
+    height: 12svh; /* ~12% of visible small viewport */
+    pointer-events: none;
+  }
+  @supports not (height: 1svh) {
+    .mobile-bottom-spacer {
+      height: 12vh;
+    }
   }
 }

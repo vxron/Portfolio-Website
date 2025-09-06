@@ -82,6 +82,12 @@ function App() {
               <div>
                 <Interface />
               </div>
+              {/* mobile-only “guard rail” so bottom bar doesn’t hide content */}
+              <div
+                style={{ border: "1px solid #e91e63" }}
+                className="mobile-bottom-spacer"
+                aria-hidden
+              />
             </MotionConfig>
           </Scroll>
         </ScrollControls>

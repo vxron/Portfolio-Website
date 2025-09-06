@@ -114,6 +114,7 @@ export const Interface = () => {
           {/* Create smooth "fade in" effect using "visible" tag */}
           <motion.div
             className="skills_div"
+            data-scroll-fence
             whileInView={"visible"}
             variants={{ visible: { opacity: 1 } }}
             initial={{ opacity: 0 }}
@@ -157,6 +158,7 @@ export const Interface = () => {
         <section className="section section--left mobile--section--bottom">
           <motion.div
             className="projects_div"
+            data-scroll-fence
             whileInView={"visible"}
             initial={{ opacity: 0 }}
             variants={{ visible: { opacity: 1 } }}
